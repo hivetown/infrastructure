@@ -11,9 +11,14 @@ Criada a máquina `loadbalancer-master`, nos em `europe-west4-a` (Países Baixos
 Foi permitido tráfego *HTTP* e *HTTPS*.
 
 Foi eliminada a interface de rede *default* e foi adicionada uma nova interface:
-> **Rede**: hivetown
-> **Sub-rede**: loadbalancers-eu-west4 IPv4 (10.0.0.0/22)
+> **Rede**: `hivetown`
+> 
+> **Sub-rede**: `loadbalancers-eu-west4` (10.0.0.0/22)
+> 
+> **Zona**: `europe-west4-a`
+> 
 > **IP principal interno**: Temporário (personalizado): `10.0.0.2`
+> 
 > **Endereço IPv4 externo**: Nenhum
 
 <details>
@@ -43,10 +48,30 @@ Neste último, no endereço externo, foi propositadamente escolhido nenhum pois 
 
 Porém, isto levanta um problema. Como não existe um endereço externo, não é possível conectar a máquina à internet.
 Para isso, foi criado um **Cloud NAT**, porém este não permite gerar uma linha de comandos equivalente.
-> **Nome**: hivetown-nat
-> **Rede**: hivetown
-> **Região**: europe-west4
-> **Cloud Router**: (criado um novo router) hivetown-eu-west4-router
+> **Nome**: `hivetown-nat`
+> 
+> **Rede**: `hivetown`
+> 
+> **Região**: `europe-west4`
+> 
+> **Cloud Router**: (criado um novo router) `hivetown-eu-west4-router`
+
+#### Instalação do Docker
+Ver [tutorial da DigitalOcean](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-20-04#step-1-installing-docker)
+
+### Backup
+Após a configuração do Master foi possível criar uma máquina semelhante (usando a interface da Console do GCP).
+
+Alterações a notar:
+> **Nome**: `loadbalancer-backup`
+> 
+> **Zona**: `europe-west4-b`
+> 
+> **Endereço principal interno**: Temporário (personalizado): `10.0.0.3`
+> 
+> **Endereço IPv4 externo**: Nenhum
+
+Foi novamente necessário instalar o Docker
 
 ## IP Externo (Floating IP)
 Foi reservado um IP externo estático (34.90.28.85) para a região `europe-west4`, associado por defeito ao `loadbalancer-master`

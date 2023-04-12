@@ -1,1 +1,1 @@
-docker run --rm -it --name hivetown-lb-${1} --privileged --net=host hivetown-lb
+docker run --rm -it --name hivetown-lb-master --privileged --net=host hivetown-lb-master
