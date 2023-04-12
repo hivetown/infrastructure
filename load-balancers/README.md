@@ -44,6 +44,10 @@ gcloud compute instances create loadbalancer-master \
 ```
 </details>
 
+**TODO**:
+- SCOPES É PRECISO SER PERMISSÕES FULL PARA A GCP API
+- LIMITAR ERA BEM PENSADO!!!
+
 Neste último, no endereço externo, foi propositadamente escolhido nenhum pois irá ser criado um **Floating IP** (10.0.0.1) que será então exposto à Internet.
 
 Porém, isto levanta um problema. Como não existe um endereço externo, não é possível conectar a máquina à internet.
