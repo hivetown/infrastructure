@@ -4,7 +4,7 @@
 
 ### Master
 
-Criada a máquina `load-balancer-master`, nos em `europe-west4-a` (Países Baixos).
+Criada a máquina `loadbalancer-master`, nos em `europe-west4-a` (Países Baixos).
 
 É uma máquina `e2-small`, que executa `Ubuntu 22.04 LTS`.
 
@@ -47,3 +47,18 @@ Para isso, foi criado um **Cloud NAT**, porém este não permite gerar uma linha
 > **Rede**: hivetown
 > **Região**: europe-west4
 > **Cloud Router**: (criado um novo router) hivetown-eu-west4-router
+
+## IP Externo (Floating IP)
+Foi reservado um IP externo estático (34.90.28.85) para a região `europe-west4`, associado por defeito ao `loadbalancer-master`
+
+<details>
+<summary>Linha de comandos equivalente</summary>
+
+```bash
+gcloud compute addresses create hivetown-external --project=hivetown --region=europe-west4
+
+gcloud compute instances add-access-config loadbalancer-master --project=hivetown --zone=europe-west4-a --address=34.90.28.85
+```
+</details>
+
+Este IP será, posteriormente, "flutuado", apontando sempre para o balanceador de carga ativo no momento. Essa operação de troca é o takeover, executando quando o balanceador passivo deteta uma falha no ativo e troca de estado (feito pelo keepalived).
