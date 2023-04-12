@@ -209,7 +209,7 @@ Foram criados shell scripts para facilitar a execução dos comandos. Estes cont
 
 2. Criou-se um container com o mysql e o mysql-client para que seja possível executar o comando mysqldump para fazer o backup da base de dados.
 ```bash
-$ docker run --name mysqldump-container -e MYSQL_ROOT_PASSWORD=hello -d mysql -p 3306:3306
+$ docker run --name mysqldump-container -e MYSQL_ROOT_PASSWORD=hello -d -p 3306:3306 mysql
 ```
 
 <br>
