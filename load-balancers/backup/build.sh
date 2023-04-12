@@ -1,1 +1,1 @@
-docker build . -t hivetown-lb-master
+docker build . -t hivetown-lb-backup
