@@ -1,1 +1,0 @@
-docker run -d --name web${1} -e PORT=808${1} --net=lb jmalloc/echo-server:latest
