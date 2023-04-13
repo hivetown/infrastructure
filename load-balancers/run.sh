@@ -1,1 +1,1 @@
-docker run --rm -it --name hivetown-lb hivetown-lb
+docker run --rm -it --name hivetown-lb -p 80:80 hivetown-lb

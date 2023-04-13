@@ -1,0 +1,1 @@
+docker run -d --restart=always --name hivetown-lb -p 80:80 hivetown-lb
