@@ -4,7 +4,7 @@
 
 ### Master
 
-Criada a máquina `loadbalancer-master`, nos em `europe-west4-a` (Países Baixos).
+Criada a máquina `loadbalancer-master`, em `europe-west4-a` (Países Baixos).
 
 É uma máquina `e2-small`, que executa `Ubuntu 22.04 LTS`.
 
@@ -47,12 +47,9 @@ gcloud compute instances create loadbalancer-master \
 **TODO**:
 - SCOPES É PRECISO SER PERMISSÕES FULL PARA A GCP API
 - LIMITAR ERA BEM PENSADO!!!
-- ADICIONAR REGRA FIREWALL PARA ICMP/INTERNAL SUFICIENTE EM CADA SUB-REDE
-- > adicionei icmp global na rede e tcp/udp global nos load balancers mas devia ser mais restrito
-- > vrrp continua sem funcionar, mas dá para fazer ping e curl duma vm para a outra
-- > VRRP FUNCIONNA!!!! MAS É QDO SE PERMITE TRAFEGO COMPLETO NA SUBNET DOS LBs -> LIMITAR!!!
+- LIMITAR FIREWALL DOS loadbalancers para apenas trafego vrrp naqueles 2 entre 10.0.0.2 e 10.0.0.3
 
-Neste último, no endereço externo, foi propositadamente escolhido nenhum pois irá ser criado um **IP Externo** posteriormente.
+Neste último, no endereço externo, foi propositadamente escolhido "nenhum" pois irá ser criado um **IP Externo** posteriormente.
 
 Porém, isto levanta um problema. Como não existe um endereço externo, não é possível conectar a máquina à internet.
 Para isso, foi criado um **Cloud NAT**, porém este não permite gerar uma linha de comandos equivalente.
@@ -66,6 +63,29 @@ Para isso, foi criado um **Cloud NAT**, porém este não permite gerar uma linha
 
 #### Instalação do Docker
 Ver [tutorial da DigitalOcean](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-20-04#step-1-installing-docker)
+
+#### Instalação do Keepalived
+
+Instalar o keepalived
+`sudo apt-get install keepalived`
+
+Iniciar o keepalived quando a VM inicia
+`sudo systemctl enable keepalived`
+
+Iniciar o keepalived imediatamente
+`sudo systemctl start keepalived`
+
+Depois, foram copiados os ficheiros de configuração de cada tipo:
+```bash
+# Máquina MASTER
+sudo cp -R keepalived/master/* /etc/keepalived
+
+# Máquina BACKUP
+sudo cp -R keepalived/backup/* /etc/keepalived
+```
+
+Finalmente, reinicia-se o keepalived para que os ficheiros se configuração sejam usados:
+`sudo systemctl restart keepalived`
 
 ### Backup
 Após a configuração do Master foi possível criar uma máquina semelhante (usando a interface da Console do GCP).
