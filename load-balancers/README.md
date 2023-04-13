@@ -47,6 +47,9 @@ gcloud compute instances create loadbalancer-master \
 **TODO**:
 - SCOPES É PRECISO SER PERMISSÕES FULL PARA A GCP API
 - LIMITAR ERA BEM PENSADO!!!
+- ADICIONAR REGRA FIREWALL PARA ICMP/INTERNAL SUFICIENTE EM CADA SUB-REDE
+- > adicionei icmp global na rede e tcp/udp global nos load balancers mas devia ser mais restrito
+- > vrrp continua sem funcionar, mas dá para fazer ping e curl duma vm para a outra
 
 Neste último, no endereço externo, foi propositadamente escolhido nenhum pois irá ser criado um **Floating IP** (10.0.0.1) que será então exposto à Internet.
 
