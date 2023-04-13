@@ -161,6 +161,7 @@ $ mysql -u root -p
 
 3. Verificar se os dados foram replicados
 ```sql
+USE hivetown;
 SELECT * FROM hivetown.users;
 ```
 
@@ -198,6 +199,40 @@ Foram criados shell scripts para facilitar a execução dos comandos. Estes cont
 11. [**Ver o status do container do slave**](./slave/status.sh)
 
 
+<br>
 
+## Servidor de backup
 
+1. À semelhança do que foi feito no servidor master e no servidor slave, foram executados os pontos 1 a 6 do capítulo anterior para instalar o Docker no servidor de backup.
+
+<br>
+
+2. Criou-se um container com o mysql e o mysql-client para que seja possível executar o comando mysqldump para fazer o backup da base de dados.
+```bash
+$ docker run --name mysqldump-container -e MYSQL_ROOT_PASSWORD=hello -d -p 3306:3306 mysql
+```
+
+<br>
+
+3. Foi criado um script responsável por fazer o backup da base de dados e armazenar numa pasta de backups. [**backup.sh**](./backup/backup.sh)
+
+<br>
+
+4. Foram concedidos privilégios de execução ao script.
+```bash
+$ chmod u+x backup.sh
+```
+
+<br>
+
+5. Por fim foi configurada a automatização do backup através do crontab, em que o script vai ser executado todos os dias às 2 da manhã (hora de suposta pouca atividade no servidor).
+```bash
+$ crontab -e
+```
+e adicionou-se a seguinte linha:
+```bash
+0 2 * * * ~/backup.sh
+```
+
+<br>
 
