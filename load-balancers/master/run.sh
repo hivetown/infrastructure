@@ -1,1 +1,0 @@
-docker run --rm -it --name hivetown-lb-master --privileged --net=host hivetown-lb-master
