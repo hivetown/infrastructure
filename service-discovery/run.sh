@@ -1,0 +1,1 @@
+docker run --rm -it --name hivetown-zookeeper -p 2181:2181 -p 8080:8080 hivetown-zookeeper
