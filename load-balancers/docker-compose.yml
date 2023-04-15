@@ -1,0 +1,25 @@
+version: '3.9'
+
+services:
+  service-discovery:
+    build: ./service-discovery
+    restart: always
+    networks:
+      - load-balancer
+    environment:
+      - ZOOKEEPER_HOSTS=10.0.0.10:2181
+  # load-balancer:
+  #   build: .
+  #   container_name: 'hivetown-lb'
+  #   restart: always
+  #   ports:
+  #     - '80:80'
+  #     - '443:443'
+  #   depends_on:
+  #     - service-discovery
+  #   networks:
+  #     - load-balancer
+
+networks:
+  load-balancer:
+    name: load-balancer

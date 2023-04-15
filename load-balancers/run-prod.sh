@@ -1,1 +1,1 @@
-docker run -d --restart unless-stopped --name hivetown-lb -p 80:80 hivetown-lb
+docker compose up -d
