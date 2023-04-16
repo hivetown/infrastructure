@@ -13,6 +13,13 @@ image=$(docker inspect -f '{{.Config.Image}}' $container_name)
 if [ "$status" == "exited" ]; then
     if [ "$image" == "mysql-master-image" ]; then
        echo "A INICIAR O SLAVE!"
+
+       # Mudança da configuração do keepalived
+       cp /home/romul/keepalived/keepalivedSLAVE.conf /home/romul/keepalived/keepalived.conf
+       sudo cp -R /home/romul/keepalived/keepalived.conf /etc/keepalived/
+       sudo systemctl restart keepalived
+       
+       # Mudança da configuração do mysql para slave
        source /home/romul/newSlave.sh
     else
        echo "A INICIAR O MASTER!"

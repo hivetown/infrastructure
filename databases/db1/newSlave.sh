@@ -3,20 +3,20 @@
 echo "A iniciar a mudança para slave..."
 
 # Para e remove o conteiner que está como master
-source ./stop.sh
-source ./remove.sh
+source /home/romul/stop.sh
+source /home/romul/remove.sh
 
 echo "Master parado e eliminado"
 
 echo "A construir..."
-source ./slave/build.sh
+source /home/romul/slave/build.sh
 echo "A correr..."
-source ./slave/run.sh
+source /home/romul/slave/run.sh
 
 echo ""
 
 sleep 3
-echo "Estado do mysql-db-2: "
+echo "Estado do mysql-db-1: "
 docker ps -a
 
 echo ""
