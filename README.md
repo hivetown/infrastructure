@@ -21,7 +21,7 @@ gcloud compute networks subnets create servicediscovery-eu-west4 --project=hivet
 
 gcloud compute networks subnets create database-backups-us-east1 --project=hivetown --description=Database\ Backups\ Network --range=10.0.112.0/20 --stack-type=IPV4_ONLY --network=hivetown --region=us-east1
 
-gcloud compute networks subnets create database-eu-west4 --project=hivetown --description=Databases\ Network --range=10.0.128.0/18 --stack-type=IPV4_ONLY --network=hivetown --region=europe-west4
+gcloud compute networks subnets create database-eu-west4 --project=hivetown --description=Databases\ Network --range=10.0.128.0/18 --stack-type=IPV4_ONLY --network=hivetown --region=europe-west4 --enable-private-ip-google-access
 
 gcloud compute networks subnets create webservers-eu-west4 --project=hivetown --description=Web\ Servers\ Netowork --range=10.0.192.0/18 --stack-type=IPV4_ONLY --network=hivetown --region=europe-west4
 ```
