@@ -1,3 +1,3 @@
 #!/bin/bash
 
-docker build -t mysql-slave-image .
+docker build -t mysql-slave-image slave/.

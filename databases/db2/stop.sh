@@ -1,3 +1,3 @@
 #!/bin/bash
 
-sudo docker stop mysql-db-2
+docker stop mysql-db-2

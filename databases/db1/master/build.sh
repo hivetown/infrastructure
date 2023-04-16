@@ -1,3 +1,3 @@
 #!/bin/bash
 
-docker build -t mysql-master-image .
+docker build -t mysql-master-image master/.

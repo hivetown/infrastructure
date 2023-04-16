@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# Define o nome do container
+container_name="mysql-db-1"
+
+# Verifica o status do container
+status=$(docker inspect -f '{{.State.Status}}' $container_name)
+
+# Obtém o nome da imagem do contêiner
+image=$(docker inspect -f '{{.Config.Image}}' $container_name)
+
+# Verifica se o container foi encerrado ou não
+if [ "$status" == "exited" ]; then
+    if [ "$image" == "mysql-master-image" ]; then
+       echo "A INICIAR O SLAVE!"
+       source /home/romul/newSlave.sh
+    else
+       echo "A INICIAR O MASTER!"
+       source /home/romul/newMaster.sh
+    fi
+else
+    echo "O container está em execução."
+fi

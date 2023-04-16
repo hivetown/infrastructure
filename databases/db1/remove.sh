@@ -1,3 +1,3 @@
 #!/bin/bash
 
-sudo docker rm mysql-db-1
+docker rm mysql-db-1
