@@ -2,7 +2,7 @@ FROM mysql:latest
 
 # Configuração do servidor MySQL master
 ENV MYSQL_ROOT_PASSWORD=hello
-ENV MYSQL_SERVER_ID=1
+ENV MYSQL_SERVER_ID=2
 ENV MYSQL_LOG_BIN=mysql-bin
 ENV MYSQL_BINLOG_DO_DB=hivetown
 
