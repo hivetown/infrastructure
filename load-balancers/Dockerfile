@@ -8,4 +8,4 @@ RUN chmod +x /usr/bin/dataplaneapi
 COPY haproxy.cfg /usr/local/etc/haproxy/haproxy.cfg
 
 # Expose the ports to the host
-EXPOSE 80 443 5555
+EXPOSE 80 443

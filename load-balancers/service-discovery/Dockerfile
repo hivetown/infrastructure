@@ -11,4 +11,4 @@ COPY src/ .
 
 ENV ZOOKEEPER_HOSTS 10.0.0.10:2181
 
-CMD ["python", "/app/index.py"]
+CMD ["python", "-u", "/app/index.py"]

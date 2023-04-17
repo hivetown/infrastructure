@@ -1,24 +1,28 @@
 version: '3.9'
 
 services:
+  load-balancer:
+    build: .
+    container_name: 'hivetown-lb'
+    restart: always
+    ports:
+      - '80:80'
+      - '443:443'
+      - '4444:4444'
+    networks:
+      - load-balancer
   service-discovery:
-    build: ./service-discovery
+    build: ./service-discovery/
     restart: always
     networks:
       - load-balancer
     environment:
       - ZOOKEEPER_HOSTS=10.0.0.10:2181
-  # load-balancer:
-  #   build: .
-  #   container_name: 'hivetown-lb'
-  #   restart: always
-  #   ports:
-  #     - '80:80'
-  #     - '443:443'
-  #   depends_on:
-  #     - service-discovery
-  #   networks:
-  #     - load-balancer
+      - HAPROXY_ADDRESS=http://hivetown-lb:4444
+      - HAPROXY_USERNAME=admin
+      - HAPROXY_PASSWORD=password
+    depends_on:
+      - load-balancer
 
 networks:
   load-balancer:
