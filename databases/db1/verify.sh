@@ -17,13 +17,13 @@ if [ "$status" == "exited" ]; then
        # Mudança da configuração do keepalived
        cp /home/romul/keepalived/keepalivedSLAVE.conf /home/romul/keepalived/keepalived.conf
        sudo cp -R /home/romul/keepalived/keepalived.conf /etc/keepalived/
-       sudo systemctl restart keepalived
+       sudo systemctl start keepalived
        
        # Mudança da configuração do mysql para slave
        source /home/romul/newSlave.sh
     else
-       echo "A INICIAR O MASTER!"
-       source /home/romul/newMaster.sh
+        echo "A REINICIAR O SLAVE"
+        docker restart $container_name
     fi
 else
     echo "O container está em execução."

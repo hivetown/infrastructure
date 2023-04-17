@@ -16,7 +16,7 @@ else
     # Mudança da configuração do keepalived
     cp /home/romul/keepalived/keepalivedMASTER.conf /home/romul/keepalived/keepalived.conf
     sudo cp -R /home/romul/keepalived/keepalived.conf /etc/keepalived/
-    sudo systemctl restart keepalived
+    sudo systemctl start keepalived
     
     # Mudança da configuração do mysql para master
     source /home/romul/newMaster.sh

@@ -236,3 +236,24 @@ e adicionou-se a seguinte linha:
 
 <br>
 
+
+### E quando o master vai abaixo?
+Para resolver este problema teve de se configurar novamente a instância instância 1 e a instância 2.
+
+No master
+
+cp /home/romul/keepalived/keepalivedMASTER.conf /home/romul/keepalived/keepalived.conf
+sudo cp -R /home/romul/keepalived/keepalived.conf /etc/keepalived/
+sudo cp -R /home/romul/keepalived/takeover.sh /etc/keepalived/
+sudo systemctl restart keepalived
+
+No slave
+cp /home/romul/keepalived/keepalivedSLAVE.conf /home/romul/keepalived/keepalived.conf
+sudo cp -R /home/romul/keepalived/keepalived.conf /etc/keepalived/
+sudo cp -R /home/romul/keepalived/takeover.sh /etc/keepalived/
+sudo systemctl restart keepalived
+
+sudo systemctl stop keepalived
+sudo systemctl status keepalived
+
+sudo tcpdump -i ens4 -nn vrrp
