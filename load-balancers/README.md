@@ -40,8 +40,8 @@ gcloud compute instances create loadbalancer-1 \
     --project=hivetown \
     --zone=europe-west4-a \
     --machine-type=e2-small \
-    --network-interface=private-network-ip=10.0.0.2,subnet=loadbalancers-eu-west4,no-address \
     --network-interface=private-network-ip=10.255.0.2,subnet=loadbalancer-eu-west4,no-address \
+    --network-interface=private-network-ip=10.0.0.2,subnet=loadbalancers-eu-west4,no-address \
     --maintenance-policy=MIGRATE \
     --provisioning-model=STANDARD \
     --service-account=433774389779-compute@developer.gserviceaccount.com \
@@ -108,8 +108,8 @@ gcloud compute instances create loadbalancer-2 \
     --project=hivetown \
     --zone=europe-west4-b \
     --machine-type=e2-small \
-    --network-interface=private-network-ip=10.0.0.3,subnet=loadbalancers-eu-west4,no-address \
     --network-interface=private-network-ip=10.255.0.3,subnet=loadbalancer-eu-west4,no-address \
+    --network-interface=private-network-ip=10.0.0.3,subnet=loadbalancers-eu-west4,no-address \
     --maintenance-policy=MIGRATE \
     --provisioning-model=STANDARD \
     --service-account=433774389779-compute@developer.gserviceaccount.com \
