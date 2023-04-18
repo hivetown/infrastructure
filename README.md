@@ -3,47 +3,15 @@
 ## Networking
 
 ### Rede
-Foi criada uma rede nova na GCP, a `hvt`.
+Foram criadas novas redes VPC na GCP, a `hivetown` e a `hivetown-external`.
 
-Depois, foram criadas as seguintes sub-redes:
-- `external-eu-west4` (10.0.0.0/21 2046 hosts) - Tráfego (HTTP(s)) da Internet para os *load balancers*
-  - Composta por *load balancers*
-  - Limita a 2046 *load balancers*
-- `loadbalancer-vrrp-eu-west4` (10.0.8.0/21 2046 hosts) - Tráfego (VRRP) entre *load balancers*
-  - Composta por *load balancers*
-  - Limita a 2046 *load balancers*
-- `database-vrrp-replication-eu-west4` (10.0.16.0/21 2046 hosts) - Tráfego (VRRP e Replicação) entre *databases*
-  - Composta por *databases*
-  - Limita a 2046 *databases* (sub-rede composta por *databases*)
-- `loadbalancer-servicediscovery-eu-west4` (10.0.32.0/20 4094 hosts) - Tráfego (???) dos *load balancers* para *service discovery*
-  - Composta por *load balancers* e *service discovery*
-  - Removendo aos 4094 hosts os 2046 *load balancers*, esta sub-rede limita à existência de 2048 máquinas *service discovery*
-- `webserver-servicediscovery-eu-west4` (10.0.64.0/19 8190 hosts) - Tráfego (???) dos *web servers* para *service discovery*
-  - Composta por *service discovery* e *web servers*
-  - É necessário ter em atenção porque irá limitar a quantidade de *web servers*.
-  - Ora, removendo os 2048 *service discovery*, 6142 IPs seriam atribuídos aos *web servers*
-- `loadbalancer-webserver-eu-west4` (10.0.96.0/19 8190 hosts) - Tráfego (HTTP) dos *load balancers* para os *web servers*
-  - Composta por *load balancers* e *web servers*
-  - Já é sabido que no máximo haverão 2046 *load balancers* e 6142 *web servers*, totalizando 8188 IPs
-  - Ficam assim disponíveis 2 IPs sem propósito definido
-- `webserver-database-eu-west4` (10.0.128.0/19 8190 hosts) - Tráfego (???) dos *web servers* para *databases*
-  - Composta por *web servers* e *databases*
-  - Removendo os 6142 *web servers*, ficam disponíveis 2048 IPs que correspondem à quantidade limite de *databases*
-  - Como anteriormente as *databases* foram limitadas a 2046 IPs, ficam também 2 IPs disponíveis sem propósito definido
-- `database-backup-eu-west4` (10.0.160.0/21 2046 hosts) - Tráfego (???) entre *databases* e [*database backups*]
-  - Composta por *databases*
-  - Limita a 2046 *databases*
-- `database-backup-us-east1` (10.1.160.0/21 2046 hosts) - Tráfego (???) entre [*databases*] e *database backups*
-  - Composta por *database backups*
-  - Limita a 2046 *database backups*
-  - O mesmo que a anterior, porém na região `us-east1`
-
-Em suma:
-- <= 2046 *load balancers*
-- <= 2046 *databases*
-- <= 2046 *database backups*
-- <= 2048 *service discovery*
-- <= 6142 *web servers*
+#### `hivetown`
+Esta VPC foi então repartida em sub-redes, para ajudar na organização e reserva de endereços para cada tipo de componente:
+- `loadbalancers-eu-west4` (10.0.0.0/22)
+- `servicediscovery-eu-west4` (10.0.4.0/22)
+- `database-backups-us-east1` (10.0.112.0/20)
+- `database-eu-west4` (10.0.128.0/18)
+- `webservers-eu-west4` (10.0.192.0/18)
 
 Como os nomes indicam, estão localizadas em `eu-west4` (Países Baixos) com a excepção da `database-backup-us-east1`, em `us-east1` (Carolina do Sul)
 
@@ -71,6 +39,19 @@ gcloud compute networks subnets create database-backup-eu-west4 --project=hiveto
 
 gcloud compute networks subnets create database-backup-us-east1 --project=hivetown --description=Tr\áfego\ \(\?\?\?\)\ entre\ \[\*databases\*\]\ e\ \*database\ backups\* --range=10.1.160.0/21 --stack-type=IPV4_ONLY --network=hvt --region=us-east1
 
+```
+</details>
+
+#### `hivetown-external`
+Nesta foi criada uma sub-rede a `loadbalancer-eu-west4` (10.255.0.0/22).
+
+<details>
+<summary>Linha de comandos equivalente</summary>
+
+```bash
+gcloud compute networks create hivetown-external --project=hivetown --description=External\ Interface\ for\ Hivetown --subnet-mode=custom --mtu=1460 --bgp-routing-mode=regional
+
+gcloud compute networks subnets create loadbalancer-eu-west4 --project=hivetown --description=Load\ balancer\ external\ subnet --range=10.255.0.0/22 --stack-type=IPV4_ONLY --network=hivetown-external --region=europe-west4
 ```
 </details>
 
