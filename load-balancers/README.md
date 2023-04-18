@@ -12,7 +12,7 @@ Foi necessário definir os escopos de acesso:
 - Compute Engine: Leitura e gravação
 
 #### Rede
-Foram adicionadas as tags de rede `ssh`, `vrrp`, `http-server`, e `https-server`
+Foram adicionadas as tags de rede `ssh`, `vrrp`, e `http-server`
 
 Foi eliminada a interface de rede *default* e foram adicionadas as seguintes interfaces:
 1. loadbalancer-eu-west4
@@ -46,7 +46,7 @@ gcloud compute instances create loadbalancer-1 \
     --provisioning-model=STANDARD \
     --service-account=433774389779-compute@developer.gserviceaccount.com \
     --scopes=https://www.googleapis.com/auth/devstorage.read_only,https://www.googleapis.com/auth/compute,https://www.googleapis.com/auth/servicecontrol,https://www.googleapis.com/auth/service.management.readonly,https://www.googleapis.com/auth/logging.write,https://www.googleapis.com/auth/monitoring.write,https://www.googleapis.com/auth/trace.append \
-    --tags=ssh,vrrp,http-server,https-server \
+    --tags=ssh,vrrp,http-server \
     --create-disk=auto-delete=yes,boot=yes,device-name=loadbalancer-1,image=projects/ubuntu-os-cloud/global/images/ubuntu-2204-jammy-v20230415,mode=rw,size=10,type=projects/hivetown/zones/europe-west4-a/diskTypes/pd-balanced \
     --no-shielded-secure-boot \
     --shielded-vtpm \
@@ -114,7 +114,7 @@ gcloud compute instances create loadbalancer-2 \
     --provisioning-model=STANDARD \
     --service-account=433774389779-compute@developer.gserviceaccount.com \
     --scopes=https://www.googleapis.com/auth/devstorage.read_only,https://www.googleapis.com/auth/compute,https://www.googleapis.com/auth/servicecontrol,https://www.googleapis.com/auth/service.management.readonly,https://www.googleapis.com/auth/logging.write,https://www.googleapis.com/auth/monitoring.write,https://www.googleapis.com/auth/trace.append \
-    --tags=ssh,vrrp,http-server,https-server \
+    --tags=ssh,vrrp,http-server \
     --create-disk=auto-delete=yes,boot=yes,device-name=loadbalancer-2,image=projects/ubuntu-os-cloud/global/images/ubuntu-2204-jammy-v20230415,mode=rw,size=10,type=projects/hivetown/zones/europe-west4-b/diskTypes/pd-balanced \
     --no-shielded-secure-boot \
     --shielded-vtpm \

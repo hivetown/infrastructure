@@ -57,6 +57,17 @@ gcloud compute networks subnets create loadbalancer-eu-west4 --project=hivetown 
 
 ### Firewall
 
+#### HTTP(s)
+Regra aplicada à tag `http-server` da rede `hivetown-external`, que permite à internet de aceder às portas 80 e 433
+
+<details>
+<summary>Linha de comandos equivalente</summary>
+
+```bash
+gcloud compute --project=hivetown firewall-rules create hivetown-external-allow-http --direction=INGRESS --priority=1000 --network=hivetown-external --action=ALLOW --rules=tcp:80,tcp:433 --source-ranges=0.0.0.0/0 --target-tags=http-server
+```
+</details>
+
 #### SSH
 Regra aplicada à tag `ssh`, que permite aos administradores do sistema conectarem-se às máquinas em questão.
 
