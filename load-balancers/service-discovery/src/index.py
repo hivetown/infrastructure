@@ -6,15 +6,15 @@ from haproxy import Haproxy
 
 haproxy = Haproxy(getenv("HAPROXY_ADDRESS"), getenv("HAPROXY_USERNAME"), getenv("HAPROXY_PASSWORD"))
 
-def addToBackend(nodes: Set, backend: AnyStr):
+def addToBackend(nodes: Set, backend: AnyStr, transaction: AnyStr):
     for node in nodes:
         print(f'Adding node {node} to backend {backend}')
-        print(haproxy.addServer(node, backend).json())
+        haproxy.addServer(node, backend, transaction)
 
-def removeFromBackend(nodes: Set, backend: AnyStr):
+def removeFromBackend(nodes: Set, backend: AnyStr, transaction: AnyStr):
     for node in nodes:
         print(f'Removing node {node} from backend {backend}')
-        haproxy.removeServer(node, backend)
+        haproxy.removeServer(node, backend, transaction)
 
 def handleChildrenChange(childrenBefore: Set, childrenNow: Set, backend: AnyStr):
     childrenSet = set(childrenNow)
@@ -22,8 +22,12 @@ def handleChildrenChange(childrenBefore: Set, childrenNow: Set, backend: AnyStr)
     # Get nodes created and deleted
     created = childrenSet - childrenBefore
     removed = childrenBefore - childrenSet
-    addToBackend(created, backend)
-    removeFromBackend(removed, backend)
+
+    configVersion = haproxy.getVersion()
+    transaction = haproxy.createTransaction(configVersion)
+    addToBackend(created, backend, transaction)
+    removeFromBackend(removed, backend, transaction)
+    haproxy.commitTransaction(transaction)
 
 apiChildren = set()
 webChildren = set()
