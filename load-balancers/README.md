@@ -2,52 +2,61 @@
 
 ## Criação VMs na GCP
 
-### Master
+### Master (ativo)
 
-Criada a máquina `loadbalancer-master`, em `europe-west4-a` (Países Baixos).
+Criada a máquina `loadbalancer-1`, em `europe-west4-a` (Países Baixos).
 
-É uma máquina `e2-small`, que executa `Ubuntu 22.04 LTS`.
+É uma máquina `e2-small`, que executa `Ubuntu 22.04 LTS` (alterado em **Disco de inicialização**).
 
-Foi permitido tráfego *HTTP* e *HTTPS*.
+Foi necessário definir os escopos de acesso:
+- Compute Engine: Leitura e gravação
 
-Foi eliminada a interface de rede *default* e foi adicionada uma nova interface:
-> **Rede**: `hivetown`
-> 
-> **Sub-rede**: `loadbalancers-eu-west4` (10.0.0.0/22)
-> 
-> **Zona**: `europe-west4-a`
-> 
-> **IP principal interno**: Temporário (personalizado): `10.0.0.2`
-> 
-> **Endereço IPv4 externo**: Nenhum
+#### Rede
+Foram adicionadas as tags de rede `ssh`, `vrrp`, `http-server`, e `https-server`
+
+Foi eliminada a interface de rede *default* e foram adicionadas as seguintes interfaces:
+1. loadbalancer-eu-west4
+    > **Rede**: `hivetown-external`
+
+    > **Sub-rede**: `loadbalancer-eu-west4` (10.255.0.0/20)
+    > 
+    > **IP principal interno**: Temporário (personalizado): `10.255.0.2`
+    > 
+    > **Endereço IPv4 externo**: Nenhum
+2. loadbalancers-eu-west4
+    > **Rede**: `hivetown`
+    > 
+    > **Sub-rede**: `loadbalancers-eu-west4` (10.0.0.0/22)
+    > 
+    > **IP principal interno**: Temporário (automático)
+    > 
+    > **Endereço IPv4 externo**: Nenhum
 
 <details>
 <summary>Linha de comandos equivalente</summary>
 
 ```bash
-gcloud compute instances create loadbalancer-master \
+gcloud compute instances create loadbalancer-1 \
     --project=hivetown \
     --zone=europe-west4-a \
     --machine-type=e2-small \
     --network-interface=private-network-ip=10.0.0.2,subnet=loadbalancers-eu-west4,no-address \
+    --network-interface=private-network-ip=10.255.0.2,subnet=loadbalancer-eu-west4,no-address \
     --maintenance-policy=MIGRATE \
     --provisioning-model=STANDARD \
     --service-account=433774389779-compute@developer.gserviceaccount.com \
-    --scopes=https://www.googleapis.com/auth/devstorage.read_only,https://www.googleapis.com/auth/logging.write,https://www.googleapis.com/auth/monitoring.write,https://www.googleapis.com/auth/servicecontrol,https://www.googleapis.com/auth/service.management.readonly,https://www.googleapis.com/auth/trace.append \
-    --tags=http-server,https-server \
-    --create-disk=auto-delete=yes,boot=yes,device-name=load-balancer-master,image=projects/ubuntu-os-cloud/global/images/ubuntu-2204-jammy-v20230302,mode=rw,size=10,type=projects/hivetown/zones/europe-west4-a/diskTypes/pd-balanced \
+    --scopes=https://www.googleapis.com/auth/devstorage.read_only,https://www.googleapis.com/auth/compute,https://www.googleapis.com/auth/servicecontrol,https://www.googleapis.com/auth/service.management.readonly,https://www.googleapis.com/auth/logging.write,https://www.googleapis.com/auth/monitoring.write,https://www.googleapis.com/auth/trace.append \
+    --tags=ssh,vrrp,http-server,https-server \
+    --create-disk=auto-delete=yes,boot=yes,device-name=loadbalancer-1,image=projects/ubuntu-os-cloud/global/images/ubuntu-2204-jammy-v20230415,mode=rw,size=10,type=projects/hivetown/zones/europe-west4-a/diskTypes/pd-balanced \
     --no-shielded-secure-boot \
     --shielded-vtpm \
     --shielded-integrity-monitoring \
     --labels=ec-src=vm_add-gcloud \
-    --reservation-affinity=any
+    --reservation-affinity=any \
+    --deletion-protection
 ```
 </details>
 
-**TODO**:
-- SCOPES É PRECISO SER PERMISSÕES FULL PARA A GCP API
-- LIMITAR ERA BEM PENSADO!!!
-- LIMITAR FIREWALL DOS loadbalancers para apenas trafego vrrp naqueles 2 entre 10.0.0.2 e 10.0.0.3
 
 Neste último, no endereço externo, foi propositadamente escolhido "nenhum" pois irá ser criado um **IP Externo** posteriormente.
 
@@ -64,6 +73,7 @@ Para isso, foi criado um **Cloud NAT**, porém este não permite gerar uma linha
 #### Instalação do Docker
 Ver [tutorial da DigitalOcean](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-20-04#step-1-installing-docker)
 
+Para facilitar, foi criado um [gist](https://gist.github.com/luckspt/844520409d7410d5a7b0e8f153d8e7e0) que inclui um script para instalar o docker (e também um para o keepalived) que automatiza este processo
 #### Instalação do Keepalived
 
 Instalar o keepalived
@@ -88,16 +98,32 @@ Finalmente, reinicia-se o keepalived para que os ficheiros se configuração sej
 `sudo systemctl restart keepalived`
 
 ### Backup
-Após a configuração do Master foi possível criar uma máquina semelhante (usando a interface da Console do GCP).
+Após a configuração do Master (ativo) foi necessário criar uma máquina com características idênticas, substituíndo o nome (`loadbalancer-2`, os ips internos `10.0.0.3` e `10.255.0.3`), e a região (`europe-west4-b`):
 
-Alterações a notar:
-> **Nome**: `loadbalancer-backup`
-> 
-> **Zona**: `europe-west4-b`
-> 
-> **Endereço principal interno**: Temporário (personalizado): `10.0.0.3`
-> 
-> **Endereço IPv4 externo**: Nenhum
+<details>
+<summary>Linha de comandos equivalente</summary>
+
+```bash
+gcloud compute instances create loadbalancer-2 \
+    --project=hivetown \
+    --zone=europe-west4-b \
+    --machine-type=e2-small \
+    --network-interface=private-network-ip=10.0.0.3,subnet=loadbalancers-eu-west4,no-address \
+    --network-interface=private-network-ip=10.255.0.3,subnet=loadbalancer-eu-west4,no-address \
+    --maintenance-policy=MIGRATE \
+    --provisioning-model=STANDARD \
+    --service-account=433774389779-compute@developer.gserviceaccount.com \
+    --scopes=https://www.googleapis.com/auth/devstorage.read_only,https://www.googleapis.com/auth/compute,https://www.googleapis.com/auth/servicecontrol,https://www.googleapis.com/auth/service.management.readonly,https://www.googleapis.com/auth/logging.write,https://www.googleapis.com/auth/monitoring.write,https://www.googleapis.com/auth/trace.append \
+    --tags=ssh,vrrp,http-server,https-server \
+    --create-disk=auto-delete=yes,boot=yes,device-name=loadbalancer-2,image=projects/ubuntu-os-cloud/global/images/ubuntu-2204-jammy-v20230415,mode=rw,size=10,type=projects/hivetown/zones/europe-west4-b/diskTypes/pd-balanced \
+    --no-shielded-secure-boot \
+    --shielded-vtpm \
+    --shielded-integrity-monitoring \
+    --labels=ec-src=vm_add-gcloud \
+    --reservation-affinity=any \
+    --deletion-protection
+```
+</details>
 
 Foi novamente necessário instalar o Docker
 
