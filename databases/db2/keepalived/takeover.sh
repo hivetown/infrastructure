@@ -14,7 +14,7 @@ else
     echo "A INICIAR O MASTER!"
 
     gcloud compute instances network-interfaces update vm-database-1 --zone europe-west4-a --aliases ""
-    gcloud compute instances network-interfaces update vm-database-2 --zone europe-west4-b --aliases 10.164.0.12
+    gcloud compute instances network-interfaces update vm-database-2 --zone europe-west4-b --aliases 10.164.0.14
 
     # Mudança da configuração do keepalived
     cp /home/romul/keepalived/keepalivedMASTER.conf /home/romul/keepalived/keepalived.conf

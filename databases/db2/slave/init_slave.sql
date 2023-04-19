@@ -1,5 +1,5 @@
 CHANGE MASTER TO
-    MASTER_HOST='10.164.0.9',
+    MASTER_HOST='10.164.0.12',
     MASTER_USER='replicator_hivetown',
     MASTER_PASSWORD='hello2',
     MASTER_PORT=3306,
