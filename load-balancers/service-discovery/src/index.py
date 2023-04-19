@@ -1,4 +1,3 @@
-from time import sleep
 from kazoo.client import KazooClient
 from dotenv import load_dotenv
 from os import getenv
