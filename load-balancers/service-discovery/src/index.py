@@ -1,3 +1,4 @@
+from time import sleep
 from kazoo.client import KazooClient
 from dotenv import load_dotenv
 from os import getenv
@@ -16,23 +17,32 @@ def removeFromBackend(nodes: Set, backend: AnyStr, transaction: AnyStr):
         print(f'Removing node {node} from backend {backend}')
         haproxy.removeServer(node, backend, transaction)
 
-def handleChildrenChange(childrenBefore: Set, childrenNow: Set, backend: AnyStr):
+def createdRemoved(childrenBefore: Set, childrenNow: Set):
     childrenSet = set(childrenNow)
 
     # Get nodes created and deleted
     created = childrenSet - childrenBefore
     removed = childrenBefore - childrenSet
 
+    return created, removed
+
+def updateChildren(created: Set, removed: Set, backend: AnyStr):
     configVersion = haproxy.getVersion()
+    print(f'Config version: {configVersion}')
     transaction = haproxy.createTransaction(configVersion)
+    print(f'Created transaction: {transaction}')
     addToBackend(created, backend, transaction)
     removeFromBackend(removed, backend, transaction)
     haproxy.commitTransaction(transaction)
+    print(f'Committed transaction: {transaction}')
 
 apiChildren = set()
 webChildren = set()
 
 def main():
+    # Wait for HaProxy Data Plane API to be ready
+    haproxy.wait_ready()
+
     hosts = getenv("ZOOKEEPER_HOSTS")
 
     zookeeper = KazooClient(hosts=hosts)
@@ -45,23 +55,29 @@ def main():
     print(f'API children1: {apiChildren}')
     webChildren = set(zookeeper.get_children("/web-servers"))
     if len(apiChildren) > 0:
-        addToBackend(apiChildren, "hvt-api")
+        updateChildren(apiChildren, set(), "hvt-api")
     if len(webChildren) > 0:
-        addToBackend(webChildren, "hvt-web")
+        updateChildren(webChildren, set(), "hvt-web")
 
     @zookeeper.ChildrenWatch("/api-servers")
     def watchApiChildren(children: List):
         global apiChildren
         childrenSet = set(children)
-        handleChildrenChange(apiChildren, childrenSet, "hvt-api")
-        apiChildren = childrenSet
+        created, removed = createdRemoved(apiChildren, childrenSet)
+
+        if len(created) > 0 or len(removed) > 0:
+            updateChildren(created, removed, "hvt-api")
+            apiChildren = childrenSet
 
     @zookeeper.ChildrenWatch("/web-servers")
     def watchWebChildren(children: List):
         global webChildren
         childrenSet = set(children)
-        handleChildrenChange(webChildren, childrenSet, "hvt-web")
-        webChildren = childrenSet
+        created, removed = createdRemoved(webChildren, childrenSet)
+
+        if len(created) > 0 or len(removed) > 0:
+            updateChildren(created, removed, "hvt-web")
+            apiChildren = childrenSet
             
     try:
         # Wait forever
