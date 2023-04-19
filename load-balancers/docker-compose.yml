@@ -16,10 +16,7 @@ services:
     networks:
       - load-balancer
     environment:
-      - ZOOKEEPER_HOSTS=10.101.221.25:2181
       - HAPROXY_ADDRESS=http://load-balancer:4444
-      - HAPROXY_USERNAME=admin
-      - HAPROXY_PASSWORD=password
     depends_on:
       - load-balancer
 
