@@ -1,0 +1,1 @@
+docker run --rm -it --name hivetown-ws-sd hivetown-ws-sd
