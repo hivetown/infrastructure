@@ -70,6 +70,8 @@ Para isso, foi criado um **Cloud NAT**, porém este não permite gerar uma linha
 > 
 > **Cloud Router**: (criado um novo router) `hivetown-eu-west4-router`
 
+E o mesmo para a rede `hivetown-external`
+
 #### Instalação do Docker
 Ver [tutorial da DigitalOcean](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-20-04#step-1-installing-docker)
 
