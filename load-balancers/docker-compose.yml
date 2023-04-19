@@ -17,6 +17,8 @@ services:
       - load-balancer
     environment:
       - HAPROXY_ADDRESS=http://load-balancer:4444
+    env_file:
+      - .env
     depends_on:
       - load-balancer
 
