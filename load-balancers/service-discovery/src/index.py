@@ -17,7 +17,7 @@ def removeFromBackend(nodes: Set, backend: AnyStr, transaction: AnyStr):
         print(f'Removing node {node} from backend {backend}')
         haproxy.removeServer(node, backend, transaction)
 
-def createdRemoved(childrenBefore: Set, childrenNow: Set):
+def createdRemoved(childrenBefore: Set, childrenNow: List):
     childrenSet = set(childrenNow)
 
     # Get nodes created and deleted
@@ -27,21 +27,20 @@ def createdRemoved(childrenBefore: Set, childrenNow: Set):
     return created, removed
 
 def updateChildren(created: Set, removed: Set, backend: AnyStr):
-    configVersion = haproxy.getVersion()
-    print(f'Config version: {configVersion}')
-    transaction = haproxy.createTransaction(configVersion)
-    print(f'Created transaction: {transaction}')
+    transaction = haproxy.getTransaction()
+    print(f'Transaction: {transaction}')
     addToBackend(created, backend, transaction)
     removeFromBackend(removed, backend, transaction)
+    print(f'Committing transaction: {transaction}')
     haproxy.commitTransaction(transaction)
-    print(f'Committed transaction: {transaction}')
+    print(f'Transaction committed: {transaction}')
 
 apiChildren = set()
 webChildren = set()
 
 def main():
     # Wait for HaProxy Data Plane API to be ready
-    haproxy.wait_ready()
+    haproxy.waitReady()
 
     hosts = getenv("ZOOKEEPER_HOSTS")
 
@@ -52,7 +51,6 @@ def main():
     zookeeper.ensure_path("/web-servers")
 
     apiChildren = set(zookeeper.get_children("/api-servers"))
-    print(f'API children1: {apiChildren}')
     webChildren = set(zookeeper.get_children("/web-servers"))
     if len(apiChildren) > 0:
         updateChildren(apiChildren, set(), "hvt-api")
@@ -62,8 +60,10 @@ def main():
     @zookeeper.ChildrenWatch("/api-servers")
     def watchApiChildren(children: List):
         global apiChildren
+        print('API children', children)
         childrenSet = set(children)
         created, removed = createdRemoved(apiChildren, childrenSet)
+        print('API created removed: ', created, removed)
 
         if len(created) > 0 or len(removed) > 0:
             updateChildren(created, removed, "hvt-api")
@@ -77,7 +77,7 @@ def main():
 
         if len(created) > 0 or len(removed) > 0:
             updateChildren(created, removed, "hvt-web")
-            apiChildren = childrenSet
+            webChildren = childrenSet
             
     try:
         # Wait forever

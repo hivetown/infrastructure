@@ -1,5 +1,6 @@
 from typing import AnyStr, Dict
 from requests import get, post, put, delete, Response, RequestException
+from time import time
 
 class Haproxy:
     """Haproxy class
@@ -11,8 +12,19 @@ class Haproxy:
         self.username = username
         self.password = password
         self.ready = False
+        self.transaction = None
+        self.transactionLastUsedTime = None
 
-    def wait_ready(self) -> bool:
+    # Lazy transaction
+    def getTransaction(self) -> AnyStr:
+        if self.transaction is None:
+            configVersion = self.getVersion()
+            self.transaction = self.createTransaction(configVersion)
+
+        self.transactionLastUsedTime = time()
+        return self.transaction
+    
+    def waitReady(self) -> bool:
         if self.ready:
             return True
         
@@ -42,12 +54,19 @@ class Haproxy:
             return None
     
     def commitTransaction(self, transaction: AnyStr) -> bool:
-        try:
-            res = self.put(f'/v2/services/haproxy/transactions/{transaction}', None)
-            json = res.json()
-            return json['status'] == 'success'
-        except Exception:
-            return False
+        # Apply transaction if not used for 10 seconds
+        while self.transaction is not None and time() - self.transactionLastUsedTime > 10:
+            try:
+                res = self.put(f'/v2/services/haproxy/transactions/{transaction}', None)
+                json = res.json()
+                return json['status'] == 'success'
+            except Exception:
+                return False
+            finally:
+                # Reset transaction
+                self.transaction = None
+                self.transactionLastUsedTime = None
+
 
     def addServer(self, server: AnyStr, backend: AnyStr, transaction: AnyStr) -> bool:
         try:
