@@ -14,7 +14,7 @@ A VM encontra-se na região `europe-west4` (Países Baixos), na zona `europe-wes
 
 Quanto à interface de rede, foi escolhida a interface da rede `hivetown`, na sub-rede `servicediscovery-eu-west4` (10.0.4.0/22) e foi também removido o IP Externo pois este componente não será exposto à Internet. O ip interno é temporário (personalizado) 10.0.4.2.
 
-Foi também adicionada a tag `ssh`.
+Foi também adicionada a tag `ssh` e uma nova `zookeeper`.
 
 <details>
 <summary>Linha de comandos equivalente</summary>
@@ -29,7 +29,7 @@ gcloud compute instances create servicediscovery-1 \
     --provisioning-model=STANDARD \
     --service-account=433774389779-compute@developer.gserviceaccount.com \
     --scopes=https://www.googleapis.com/auth/devstorage.read_only,https://www.googleapis.com/auth/logging.write,https://www.googleapis.com/auth/monitoring.write,https://www.googleapis.com/auth/servicecontrol,https://www.googleapis.com/auth/service.management.readonly,https://www.googleapis.com/auth/trace.append \
-    --tags=ssh \
+    --tags=ssh,zookeeper \
     --create-disk=auto-delete=yes,boot=yes,device-name=servicediscovery-1,image=projects/ubuntu-os-cloud/global/images/ubuntu-2204-jammy-v20230415,mode=rw,size=10,type=projects/hivetown/zones/europe-west4-a/diskTypes/pd-balanced \
     --no-shielded-secure-boot \
     --shielded-vtpm \
@@ -37,5 +37,18 @@ gcloud compute instances create servicediscovery-1 \
     --labels=ec-src=vm_add-gcloud \
     --reservation-affinity=any \
     --deletion-protection
+```
+</details>
+
+## Firewall
+Criada uma regra de firewall para permitir o acesso ao zookeeper (TCP 2181).
+
+Os intervalos IPv4 de origem foram os das subredes dos load balancers (`loadbalancers-eu-west4` 10.0.0.0/22) e dos web servers (`webservers-eu-west4` 10.0.192.0/18)
+
+<details>
+<summary>Linha de comandos equivalente</summary>
+
+```bash
+gcloud compute --project=hivetown firewall-rules create hivetown-allow-zookeeper --description=Permitir\ tr\áfego\ dos\ clientes\ para\ o\ zookeeper --direction=INGRESS --priority=1000 --network=hivetown --action=ALLOW --rules=tcp:2181 --source-ranges=10.0.0.0/22,10.0.192.0/18 --target-tags=zookeeper
 ```
 </details>

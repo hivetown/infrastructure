@@ -37,6 +37,9 @@ gcloud compute instances create webserver-1 \
 ```
 </details>
 
+### Firewall
+load balancers -> web servers tcp:8080,8081
+
 ## Configuração da máquina
 Foi instalado o docker, da mesma forma que nos balanceadores de carga, e clonado este repositório.
 
