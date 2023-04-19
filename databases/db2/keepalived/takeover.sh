@@ -13,12 +13,17 @@ if [ "$image" == "mysql-master-image" ]; then
 else
     echo "A INICIAR O MASTER!"
 
+    gcloud compute instances network-interfaces update vm-database-1 --zone europe-west4-a --aliases ""
+    gcloud compute instances network-interfaces update vm-database-2 --zone europe-west4-b --aliases 10.164.0.12
+
     # Mudança da configuração do keepalived
     cp /home/romul/keepalived/keepalivedMASTER.conf /home/romul/keepalived/keepalived.conf
     sudo cp -R /home/romul/keepalived/keepalived.conf /etc/keepalived/
-    sudo systemctl start keepalived
-    
-    # Mudança da configuração do mysql para master
-    source /home/romul/newMaster.sh
+    sudo systemctl restart keepalived
+
+    if systemctl status keepalived | grep -q 'MASTER'; then
+        # Mudança da configuração do mysql para master
+        source /home/romul/newMaster.sh
+    fi
 fi
 

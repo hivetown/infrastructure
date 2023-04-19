@@ -59,7 +59,7 @@ $ sudo usermod -aG docker $USER
 
 
 ### Configuração da comunicação entre os servidores
-Foi necessário configurar a comunicação no GCP criando uma regra de firewall para permitir a comunicação entre os servidores. Foi permetido o acesso aos portos 3306 e 33060 via TCP para o intervalo de IP 10.164.0.5 - slave e 10.164.0.6 - master.
+Foi necessário configurar a comunicação no GCP criando uma regra de firewall para permitir a comunicação entre os servidores. Foi permetido o acesso aos portos 3306 e 33060 via TCP para o intervalo de IP 10.164.0.10 - slave e 10.164.0.9 - master.
 
 ### Foram criados os seguintes ficheiros para a configuração dos servidores
 
@@ -240,18 +240,20 @@ e adicionou-se a seguinte linha:
 ### E quando o master vai abaixo?
 Para resolver este problema teve de se configurar novamente a instância instância 1 e a instância 2.
 
-No master
 
+PARA INICIAR 
+
+No master
+./init_master.sh
 cp /home/romul/keepalived/keepalivedMASTER.conf /home/romul/keepalived/keepalived.conf
 sudo cp -R /home/romul/keepalived/keepalived.conf /etc/keepalived/
 sudo cp -R /home/romul/keepalived/takeover.sh /etc/keepalived/
-sudo systemctl restart keepalived
 
 No slave
+./initSlave.sh
 cp /home/romul/keepalived/keepalivedSLAVE.conf /home/romul/keepalived/keepalived.conf
 sudo cp -R /home/romul/keepalived/keepalived.conf /etc/keepalived/
 sudo cp -R /home/romul/keepalived/takeover.sh /etc/keepalived/
-sudo systemctl restart keepalived
 
 sudo systemctl stop keepalived
 sudo systemctl status keepalived
