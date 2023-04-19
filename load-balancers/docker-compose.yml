@@ -9,15 +9,18 @@ services:
       - '443:443'
       - '4444:4444'
     networks:
-      - load-balancer
+      load-balancer:
+        aliases:
+          - load-balancer.local
+    hostname: load-balancer.local
   service-discovery:
     build: ./service-discovery/
     restart: always
     networks:
       - load-balancer
     environment:
-      - ZOOKEEPER_HOSTS=10.0.0.10:2181
-      - HAPROXY_ADDRESS=http://hivetown-lb:4444
+      - ZOOKEEPER_HOSTS=192.168.1.89:2181
+      - HAPROXY_ADDRESS=http://192.168.1.89:4444
       - HAPROXY_USERNAME=admin
       - HAPROXY_PASSWORD=password
     depends_on:
@@ -26,3 +29,4 @@ services:
 networks:
   load-balancer:
     name: load-balancer
+    driver: bridge
