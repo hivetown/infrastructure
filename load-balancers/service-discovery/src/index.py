@@ -2,9 +2,24 @@ from kazoo.client import KazooClient
 from dotenv import load_dotenv
 from os import getenv
 from typing import Set, List, AnyStr
-from haproxy import Haproxy
+from Haproxy import Haproxy
+from RepeatTimer import RepeatTimer
+from datetime import datetime
 
 haproxy = Haproxy(getenv("HAPROXY_ADDRESS"), getenv("HAPROXY_USERNAME"), getenv("HAPROXY_PASSWORD"))
+def applyTransaction():
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    
+    transaction = haproxy.transaction
+    if transaction is None:
+        print(f'No transaction to apply at {now}')
+        return
+    
+    res = haproxy.commitTransaction()
+    print(f'Transaction {transaction} {"SUCCESS" if res else "FAIL"} at {now}')
+
+
+repeatTimer = RepeatTimer(5, applyTransaction)
 
 def addToBackend(nodes: Set, backend: AnyStr, transaction: AnyStr):
     for node in nodes:
@@ -30,9 +45,6 @@ def updateChildren(created: Set, removed: Set, backend: AnyStr):
     print(f'Transaction: {transaction}')
     addToBackend(created, backend, transaction)
     removeFromBackend(removed, backend, transaction)
-    print(f'Committing transaction: {transaction}')
-    haproxy.commitTransaction(transaction)
-    print(f'Transaction committed: {transaction}')
 
 apiChildren = set()
 webChildren = set()
@@ -59,10 +71,8 @@ def main():
     @zookeeper.ChildrenWatch("/api-servers")
     def watchApiChildren(children: List):
         global apiChildren
-        print('API children', children)
         childrenSet = set(children)
         created, removed = createdRemoved(apiChildren, childrenSet)
-        print('API created removed: ', created, removed)
 
         if len(created) > 0 or len(removed) > 0:
             updateChildren(created, removed, "hvt-api")
@@ -77,7 +87,8 @@ def main():
         if len(created) > 0 or len(removed) > 0:
             updateChildren(created, removed, "hvt-web")
             webChildren = childrenSet
-            
+
+    repeatTimer.start()
     try:
         # Wait forever
         while True:
@@ -85,7 +96,8 @@ def main():
     except Exception:
         pass
 
-    # Stop the ZooKeeper client
+    # Stop whatever is running
+    repeatTimer.cancel()
     zookeeper.stop()
     zookeeper.close()
 

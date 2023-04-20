@@ -1,6 +1,7 @@
 from typing import AnyStr, Dict
 from requests import get, post, put, delete, Response, RequestException
-from time import time
+from time import time, sleep
+from threading import Lock, Timer
 
 class Haproxy:
     """Haproxy class
@@ -13,16 +14,6 @@ class Haproxy:
         self.password = password
         self.ready = False
         self.transaction = None
-        self.transactionLastUsedTime = None
-
-    # Lazy transaction
-    def getTransaction(self) -> AnyStr:
-        if self.transaction is None:
-            configVersion = self.getVersion()
-            self.transaction = self.createTransaction(configVersion)
-
-        self.transactionLastUsedTime = time()
-        return self.transaction
     
     def waitReady(self) -> bool:
         if self.ready:
@@ -52,21 +43,28 @@ class Haproxy:
             return json['id']
         except Exception:
             return None
-    
-    def commitTransaction(self, transaction: AnyStr) -> bool:
-        # Apply transaction if not used for 10 seconds
-        while self.transaction is not None and time() - self.transactionLastUsedTime > 10:
-            try:
-                res = self.put(f'/v2/services/haproxy/transactions/{transaction}', None)
-                json = res.json()
-                return json['status'] == 'success'
-            except Exception:
-                return False
-            finally:
-                # Reset transaction
-                self.transaction = None
-                self.transactionLastUsedTime = None
 
+    # Lazy transaction
+    def getTransaction(self) -> AnyStr:
+        if self.transaction is None:
+            configVersion = self.getVersion()
+            self.transaction = self.createTransaction(configVersion)
+
+        return self.transaction
+   
+    def commitTransaction(self) -> bool:
+        """
+        :requires: self.transaction is not None
+        """
+        try:
+            res = self.put(f'/v2/services/haproxy/transactions/{self.transaction}', None)
+            json = res.json()
+            return json['status'] == 'success'
+        except Exception:
+            return False
+        finally:
+            # Reset transaction
+            self.transaction = None
 
     def addServer(self, server: AnyStr, backend: AnyStr, transaction: AnyStr) -> bool:
         try:
@@ -87,7 +85,7 @@ class Haproxy:
 
     def removeServer(self, server: AnyStr, backend: AnyStr, transaction: AnyStr) -> Response:
         try:
-            self.delete(f'/v2/services/haproxy/runtime/servers/{server}?backend={backend}&transaction_id={transaction}')
+            self.delete(f'/v2/services/haproxy/configuration/servers/{server}?backend={backend}&transaction_id={transaction}')
             return True
         except Exception:
             return False
@@ -103,3 +101,4 @@ class Haproxy:
     
     def delete(self, endpoint: AnyStr) -> Response:
         return delete(f'{self.address}{endpoint}', auth=(self.username, self.password))
+    
