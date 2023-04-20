@@ -19,25 +19,17 @@ Como os nomes indicam, estão localizadas em `eu-west4` (Países Baixos) com a e
 <summary>Linhas de comandos equivalente:</summary>
 
 ```bash
-gcloud compute networks create hvt --project=hivetown --description=Hivetown\ Network --subnet-mode=custom --mtu=1460 --bgp-routing-mode=regional
+gcloud compute networks create hivetown --project=hivetown --subnet-mode=custom --mtu=1460 --bgp-routing-mode=regional
 
-gcloud compute networks subnets create external-eu-west4 --project=hivetown --description=Tr\áfego\ \(HTTP\(s\)\)\ da\ Internet\ para\ os\ \*load\ balancers\* --range=10.0.0.0/21 --stack-type=IPV4_ONLY --network=hvt --region=europe-west4
+gcloud compute networks subnets create loadbalancers-eu-west4 --project=hivetown --description=Load\ Balancing\ Network --range=10.0.0.0/22 --stack-type=IPV4_ONLY --network=hivetown --region=europe-west4 --enable-private-ip-google-access
 
-gcloud compute networks subnets create loadbalancer-vrrp-eu-west4 --project=hivetown --description=Tr\áfego\ \(VRRP\)\ entre\ \*load\ balancers\* --range=10.0.8.0/21 --stack-type=IPV4_ONLY --network=hvt --region=europe-west4 --enable-private-ip-google-access
+gcloud compute networks subnets create servicediscovery-eu-west4 --project=hivetown --description=Service\ Discovery\ Network --range=10.0.4.0/22 --stack-type=IPV4_ONLY --network=hivetown --region=europe-west4
 
-gcloud compute networks subnets create database-vrrp-replication-eu-west4 --project=hivetown --description=Tr\áfego\ \(VRRP\ e\ Replica\ç\ão\)\ entre\ \*databases\* --range=10.0.16.0/21 --stack-type=IPV4_ONLY --network=hvt --region=europe-west4 --enable-private-ip-google-access
+gcloud compute networks subnets create database-backups-us-east1 --project=hivetown --description=Database\ Backups\ Network --range=10.0.112.0/20 --stack-type=IPV4_ONLY --network=hivetown --region=us-east1
 
-gcloud compute networks subnets create loadbalancer-servicediscovery-eu-west4 --project=hivetown --description=Tr\áfego\ \(\?\?\?\)\ dos\ \*load\ balancers\*\ para\ \*service\ discovery\* --range=10.0.32.0/20 --stack-type=IPV4_ONLY --network=hvt --region=europe-west4
+gcloud compute networks subnets create database-eu-west4 --project=hivetown --description=Databases\ Network --range=10.0.128.0/18 --stack-type=IPV4_ONLY --network=hivetown --region=europe-west4 --enable-private-ip-google-access
 
-gcloud compute networks subnets create webserver-servicediscovery-eu-west4 --project=hivetown --description=Tr\áfego\ \(\?\?\?\)\ dos\ \*web\ servers\*\ para\ \*service\ discovery\* --range=10.0.64.0/19 --stack-type=IPV4_ONLY --network=hvt --region=europe-west4
-
-gcloud compute networks subnets create loadbalancer-webserver-eu-west4 --project=hivetown --description=Tr\áfego\ \(HTTP\)\ dos\ \*load\ balancers\*\ para\ os\ \*web\ servers\* --range=10.0.96.0/19 --stack-type=IPV4_ONLY --network=hvt --region=europe-west4
-
-gcloud compute networks subnets create webserver-database-eu-west4 --project=hivetown --description=Tr\áfego\ \(\?\?\?\)\ dos\ \*web\ servers\*\ para\ \*databases\* --range=10.0.128.0/19 --stack-type=IPV4_ONLY --network=hvt --region=europe-west4
-
-gcloud compute networks subnets create database-backup-eu-west4 --project=hivetown --description=Tr\áfego\ \(\?\?\?\)\ entre\ \*databases\*\ e\ \[\*database\ backups\*\] --range=10.0.160.0/21 --stack-type=IPV4_ONLY --network=hvt --region=europe-west4
-
-gcloud compute networks subnets create database-backup-us-east1 --project=hivetown --description=Tr\áfego\ \(\?\?\?\)\ entre\ \[\*databases\*\]\ e\ \*database\ backups\* --range=10.1.160.0/21 --stack-type=IPV4_ONLY --network=hvt --region=us-east1
+gcloud compute networks subnets create webservers-eu-west4 --project=hivetown --description=Web\ Servers\ Network --range=10.0.192.0/18 --stack-type=IPV4_ONLY --network=hivetown --region=europe-west4
 
 ```
 </details>
@@ -77,7 +69,7 @@ Para isto foi permitido tcp na porta 22 (porta default ssh).
 <summary>Linha de comandos equivalente:</summary>
 
 ```bash
-gcloud compute --project=hivetown firewall-rules create hvt-ssh --description="Permitir SSH" --direction=INGRESS --priority=1000 --network=hvt --action=ALLOW --rules=tcp:22 --source-ranges=35.235.240.0/20 --target-tags=ssh
+gcloud compute --project=hivetown firewall-rules create hivetown-allow-ssh --description="Allow SSH" --direction=INGRESS --priority=65534 --network=hivetown --action=ALLOW --rules=tcp:22 --source-ranges=35.235.240.0/20 --target-tags=ssh
 ```
 </details>
 
@@ -90,7 +82,7 @@ Para isto foi permitido o protocolo 112 (código IANA para o VRRP).
 <summary>Linha de comandos equivalente</summary>
 
 ```bash
-gcloud compute --project=hivetown firewall-rules create hvt-vrrp --description="Permitir VRRP" --direction=INGRESS --priority=1000 --network=hvt --action=ALLOW --rules=112 --source-tags=vrrp --target-tags=vrrp
+gcloud compute --project=hivetown firewall-rules create hivetown-allow-vrrp --description="Allow VRRP" --direction=INGRESS --priority=1000 --network=hivetown --action=ALLOW --rules=112 --source-ranges=10.0.0.0/22,10.0.128.0/18 --source-tags=vrrp --target-tags=vrrp
 ```
 </details>
 

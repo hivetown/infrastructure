@@ -72,20 +72,30 @@ Para isso, foi criado um **Cloud NAT**, porém este não permite gerar uma linha
 
 E o mesmo para a rede `hivetown-external`
 
+Como a interface default é a externa, é necessário adicionar uma rota para que os pacotes direcionados à rede interna (pois apenas são aceites para a subrede dos load balancers) sejam redirecionados para a interface interna:
+```bash
+sudo ip route add 10.0.0.0/8 via 10.0.0.1
+```
+
 #### Instalação do Docker
 Ver [tutorial da DigitalOcean](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-20-04#step-1-installing-docker)
 
 Para facilitar, foi criado um [gist](https://gist.github.com/luckspt/844520409d7410d5a7b0e8f153d8e7e0) que inclui um script para instalar o docker (e também um para o keepalived) que automatiza este processo
 #### Instalação do Keepalived
+<details>
+<summary>É possível usar um script referido acima, ou da forma manual:</summary>
 
-Instalar o keepalived
-`sudo apt-get install keepalived`
+```bash
+# Instalar o keepalived
+sudo apt-get install keepalived
 
-Iniciar o keepalived quando a VM inicia
-`sudo systemctl enable keepalived`
+# Iniciar o keepalived quando a VM inicia
+sudo systemctl enable keepalived
 
-Iniciar o keepalived imediatamente
-`sudo systemctl start keepalived`
+# Iniciar o keepalived imediatamente
+sudo systemctl start keepalived
+```
+</details>
 
 Depois, foram copiados os ficheiros de configuração de cada tipo:
 ```bash
@@ -97,9 +107,11 @@ sudo cp -R keepalived/backup/* /etc/keepalived
 ```
 
 Finalmente, reinicia-se o keepalived para que os ficheiros se configuração sejam usados:
-`sudo systemctl restart keepalived`
+```bash
+sudo systemctl restart keepalived
+```
 
-### Backup
+### Backup (passivo)
 Após a configuração do Master (ativo) foi necessário criar uma máquina com características idênticas, substituíndo o nome (`loadbalancer-2`, os ips internos `10.0.0.3` e `10.255.0.3`), e a região (`europe-west4-b`):
 
 <details>
@@ -130,7 +142,7 @@ gcloud compute instances create loadbalancer-2 \
 Foi novamente necessário instalar o Docker
 
 ## IP Externo (Floating IP)
-Foi reservado um IP externo estático (34.90.28.85) para a região `europe-west4`, associado por defeito ao `loadbalancer-master`
+Foi reservado um IP externo estático (34.90.28.85) para a região `europe-west4`, associado por defeito ao `loadbalancer-1`
 
 <details>
 <summary>Linha de comandos equivalente</summary>
@@ -138,7 +150,7 @@ Foi reservado um IP externo estático (34.90.28.85) para a região `europe-west4
 ```bash
 gcloud compute addresses create hivetown-external --project=hivetown --region=europe-west4
 
-gcloud compute instances add-access-config loadbalancer-master --project=hivetown --zone=europe-west4-a --address=34.90.28.85
+gcloud compute instances add-access-config loadbalancer-1 --project=hivetown --zone=europe-west4-a --address=34.90.28.85
 ```
 </details>
 
