@@ -15,10 +15,8 @@ if docker ps -a | grep -q $container_name; then
         if [ "$state" = "BACKUP" ]; then
             echo "A INICIAR O MASTER!"
 
-            sudo su - romul
-
-            gcloud compute instances network-interfaces update vm-database-1 --zone europe-west4-a --aliases ""
-            gcloud compute instances network-interfaces update vm-database-2 --zone europe-west4-b --aliases 10.0.128.10
+            gcloud compute instances network-interfaces update vm-database-2 --zone europe-west4-b --aliases "" >> /home/romul/log.txt 2>&1
+            gcloud compute instances network-interfaces update vm-database-1 --zone europe-west4-a --aliases 10.0.128.10
 
        
             # Mudança da configuração do keepalived
