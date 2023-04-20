@@ -14,3 +14,4 @@ COPY init_master.sql /docker-entrypoint-initdb.d/
 
 # Expõe a porta 3306
 EXPOSE 3306
+
