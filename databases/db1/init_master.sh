@@ -1,6 +1,6 @@
 #!/bin/bash
-
-gcloud compute instances network-interfaces update vm-database-1 --zone europe-west4-a --aliases 10.164.0.12
+gcloud compute instances network-interfaces update vm-database-2 --zone europe-west4-b --aliases ""
+gcloud compute instances network-interfaces update vm-database-1 --zone europe-west4-a --aliases 10.0.128.10
 
 echo "A construir..."
 source ./master/build.sh
