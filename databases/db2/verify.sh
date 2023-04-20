@@ -12,17 +12,18 @@ image=$(docker inspect -f '{{.Config.Image}}' $container_name)
 # Verifica se o container foi encerrado ou não
 if [ "$status" == "exited" ]; then
     if [ "$image" == "mysql-master-image" ]; then
-        echo "A INICIAR O SLAVE!"
 
-        # Mudança da configuração do keepalived
-        cp /home/romul/keepalived/keepalivedSLAVE.conf /home/romul/keepalived/keepalived.conf
-        sudo cp -R /home/romul/keepalived/keepalived.conf /etc/keepalived/
-        sudo systemctl start keepalived
+        state=$(grep "^ *state" /etc/keepalived/keepalived.conf | awk '{print $2}')
+        if [ "$state" = "MASTER" ]; then
+            echo "A INICIAR O SLAVE!"
 
-        if systemctl status keepalived | grep -q 'BACKUP'; then
-            # Mudança da configuração do mysql para slave
-            source /home/romul/newSlave.sh
+            # Mudança da configuração do keepalived
+            cp /home/romul/keepalived/keepalivedSLAVE.conf /home/romul/keepalived/keepalive.conf
+            sudo cp -R /home/romul/keepalived/keepalived.conf /etc/keepalived/
+            sudo systemctl restart keepalived
         fi
+        # Mudança da configuração do mysql para slave
+        source /home/romul/newSlave.sh
 
     else
         echo "A REINICIAR O SLAVE"
