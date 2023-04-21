@@ -59,7 +59,7 @@ $ sudo usermod -aG docker $USER
 
 
 ### Configuração da comunicação entre os servidores
-Foi necessário configurar a comunicação no GCP criando uma regra de firewall para permitir a comunicação entre os servidores. Foi permetido o acesso aos portos 3306 e 33060 via TCP para o intervalo de IP 10.164.0.5 - slave e 10.164.0.6 - master.
+Foi necessário configurar a comunicação no GCP criando uma regra de firewall para permitir a comunicação entre os servidores. Foi permetido o acesso aos portos 3306 e 33060 via TCP para o intervalo de IP 10.164.0.10 - slave e 10.164.0.9 - master.
 
 ### Foram criados os seguintes ficheiros para a configuração dos servidores
 
@@ -161,6 +161,7 @@ $ mysql -u root -p
 
 3. Verificar se os dados foram replicados
 ```sql
+USE hivetown;
 SELECT * FROM hivetown.users;
 ```
 
@@ -198,6 +199,63 @@ Foram criados shell scripts para facilitar a execução dos comandos. Estes cont
 11. [**Ver o status do container do slave**](./slave/status.sh)
 
 
+<br>
+
+## Servidor de backup
+
+1. À semelhança do que foi feito no servidor master e no servidor slave, foram executados os pontos 1 a 6 do capítulo anterior para instalar o Docker no servidor de backup.
+
+<br>
+
+2. Criou-se um container com o mysql e o mysql-client para que seja possível executar o comando mysqldump para fazer o backup da base de dados.
+```bash
+$ docker run --name mysqldump-container -e MYSQL_ROOT_PASSWORD=hello -d -p 3306:3306 mysql
+```
+
+<br>
+
+3. Foi criado um script responsável por fazer o backup da base de dados e armazenar numa pasta de backups. [**backup.sh**](./backup/backup.sh)
+
+<br>
+
+4. Foram concedidos privilégios de execução ao script.
+```bash
+$ chmod u+x backup.sh
+```
+
+<br>
+
+5. Por fim foi configurada a automatização do backup através do crontab, em que o script vai ser executado todos os dias às 2 da manhã (hora de suposta pouca atividade no servidor).
+```bash
+$ crontab -e
+```
+e adicionou-se a seguinte linha:
+```bash
+0 2 * * * ~/backup.sh
+```
+
+<br>
 
 
+### E quando o master vai abaixo?
+Para resolver este problema teve de se configurar novamente a instância instância 1 e a instância 2.
 
+
+PARA INICIAR 
+
+No master
+./init_master.sh
+cp /home/romul/keepalived/keepalivedMASTER.conf /home/romul/keepalived/keepalived.conf
+sudo cp -R /home/romul/keepalived/keepalived.conf /etc/keepalived/
+sudo cp -R /home/romul/keepalived/takeover.sh /etc/keepalived/
+
+No slave
+./initSlave.sh
+cp /home/romul/keepalived/keepalivedSLAVE.conf /home/romul/keepalived/keepalived.conf
+sudo cp -R /home/romul/keepalived/keepalived.conf /etc/keepalived/
+sudo cp -R /home/romul/keepalived/takeover.sh /etc/keepalived/
+
+sudo systemctl stop keepalived
+sudo systemctl status keepalived
+
+sudo tcpdump -i ens4 -nn vrrp
