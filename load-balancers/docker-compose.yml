@@ -1,0 +1,28 @@
+version: '3.9'
+
+services:
+  load-balancer:
+    build: .
+    restart: always
+    ports:
+      - '80:80'
+      - '443:443'
+      - '4444:4444'
+    networks:
+      - load-balancer
+  service-discovery:
+    build: ./service-discovery/
+    restart: always
+    networks:
+      - load-balancer
+    environment:
+      - HAPROXY_ADDRESS=http://load-balancer:4444
+    env_file:
+      - .env
+    depends_on:
+      - load-balancer
+
+networks:
+  load-balancer:
+    name: load-balancer
+    driver: bridge

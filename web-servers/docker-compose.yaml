@@ -4,15 +4,11 @@ services:
     restart: unless-stopped
     image: "luckspt/hivetown-api:latest"
     ports:
-      - "8080:3000"
+      - "8080:8080"
     environment:
-      - "PORT=3000"
-      - "MIKRO_ORM_HOST=localhost"
-      - "MIKRO_ORM_PORT=3306"
-      - "MIKRO_ORM_USER=root"
-      - "MIKRO_ORM_PASSWORD=hello"
-      - "MIKRO_ORM_DB_NAME=hivetown"
-      - "MIKRO_ORM_DEBUG=true"
+      - "PORT=8080"
+    env_file:
+      - api.env
   web:
     restart: unless-stopped
     image: "luckspt/hivetown-web:latest"
@@ -20,3 +16,14 @@ services:
       - "8081:8080"
     environment:
       - "PORT=8080"
+  service-discovery:
+    depends_on:
+      - api
+      - web
+    restart: unless-stopped
+    build: ./service-discovery/
+    environment:
+      - API_PORT=8080
+      - WEB_PORT=8081
+    env_file:
+      - .env

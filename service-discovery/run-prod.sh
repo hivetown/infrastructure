@@ -1,0 +1,1 @@
+docker run -d --restart always --name hivetown-zookeeper -p 2181:2181 hivetown-zookeeper
