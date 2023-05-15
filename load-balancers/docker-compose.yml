@@ -8,6 +8,9 @@ services:
       - '80:80'
       - '443:443'
       - '4444:4444'
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
     networks:
       - load-balancer
   service-discovery:
@@ -21,7 +24,19 @@ services:
       - .env
     depends_on:
       - load-balancer
-
+  certbot:
+    image: certbot/certbot
+    restart: always
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    networks:
+      - load-balancer
+    depends_on:
+      - load-balancer
+    command: certonly --webroot --webroot-path=/var/www/certbot --email ${CERTBOT_EMAIL} --agree-tos --no-eff-email --force-renewal -d ${CERTBOT_DOMAINS}
+    env_file:
+      - .env
 networks:
   load-balancer:
     name: load-balancer
