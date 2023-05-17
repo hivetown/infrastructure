@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Defina as variáveis para a conexão SSH
+# TODO firewall ssh apenas entre as máquinas
 USER="romul"
 HOST="10.0.112.2"
 BACKUP_DIR="/home/romul/backups"
@@ -27,6 +28,7 @@ fi
 # Adiciona o comando USE hivetown antes do comando DROP TABLE
 sed -i '1iUSE hivetown;' ${DEST}/${FILENAME}
 
+# TODO vars
 docker exec -i mysql-db-1 mysql -uroot -phello -e "CREATE DATABASE hivetown;"
 docker exec -i mysql-db-1 mysql -uroot -phello hivetown < ${DEST}/${FILENAME};
 

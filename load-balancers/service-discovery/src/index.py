@@ -18,8 +18,8 @@ def applyTransaction():
     res = haproxy.commitTransaction()
     print(f'Transaction {transaction} {"SUCCESS" if res else "FAIL"} at {now}')
 
-
-repeatTimer = RepeatTimer(5, applyTransaction)
+# Haproxy transaction is applied every 5 seconds, if there is one, so we check every 6 seconds to make sure we don't miss any
+repeatTimer = RepeatTimer(6, applyTransaction)
 
 def addToBackend(nodes: Set, backend: AnyStr, transaction: AnyStr):
     for node in nodes:

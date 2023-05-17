@@ -4,7 +4,6 @@
 container_name="mysql-db-1"
 
 if docker ps -a | grep -q $container_name; then
-
     # Obtém o nome da imagem do contêiner
     image=$(docker inspect -f '{{.Config.Image}}' $container_name)
 
@@ -29,4 +28,3 @@ if docker ps -a | grep -q $container_name; then
         source /home/romul/newMaster.sh
     fi
 fi
-

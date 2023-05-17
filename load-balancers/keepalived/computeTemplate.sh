@@ -6,7 +6,9 @@ if [ ! -f .env ]; then
 fi
 
 # Populate environment variables from local .env
-. ./loadEnv.sh
+set -a
+. .env
+set +a
 
 # Generate keepalived.conf from template, replacing environment variables with their values
-envsubst < keepalived.conf.template > keepalived.conf
+envsubst < keepalived.template.conf > keepalived.conf

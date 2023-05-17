@@ -10,13 +10,12 @@ set -a
 . .env
 set +a
 
-
 # Generate keepalived.master.conf from template, replacing environment variables with their values
 export STATE=MASTER
 export PRIORITY=100
-envsubst < keepalived.conf.template > keepalived.master.conf
+envsubst < keepalived.template.conf > keepalived.master.conf
 
 # Generate keepalived.backup.conf from template, replacing environment variables with their values
 export STATE=BACKUP
 export PRIORITY=50
-envsubst < keepalived.conf.template > keepalived.backup.conf
+envsubst < keepalived.template.conf > keepalived.backup.conf

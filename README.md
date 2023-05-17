@@ -74,9 +74,7 @@ gcloud compute --project=hivetown firewall-rules create hivetown-allow-ssh --des
 </details>
 
 #### VRRP
-Regra aplicada à tag `vrrp` (origem e destino), que permite troca de mensagens do Keepalived para healthchecks.
-
-Para isto foi permitido o protocolo 112 (código IANA para o VRRP).
+Ver [Keepalived Loadbalancers](../load-balancers/keepalived/README.md) e [Keepalived Bases de Dados](../databases/keepalived/README.md)
 
 <details>
 <summary>Linha de comandos equivalente</summary>
