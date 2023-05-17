@@ -7,7 +7,7 @@ services:
     ports:
       - '80:80'
       - '443:443'
-      - '4444:4444'
+      # - '4444:4444'
     volumes:
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
@@ -24,9 +24,12 @@ services:
       - .env
     depends_on:
       - load-balancer
-  certbot:
+  letsencrypt:
     image: certbot/certbot
-    restart: always
+    deploy:
+      restart_policy:
+        condition: any
+        delay: 24h
     volumes:
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
@@ -34,7 +37,7 @@ services:
       - load-balancer
     depends_on:
       - load-balancer
-    command: certonly --webroot --webroot-path=/var/www/certbot --email ${CERTBOT_EMAIL} --agree-tos --no-eff-email --force-renewal -d ${CERTBOT_DOMAINS}
+    command: certonly --test-cert --standalone -d ${CERTBOT_DOMAINS} --non-interactive --email ${CERTBOT_EMAIL} --agree-tos --no-eff-email --http-01-port=8888
     env_file:
       - .env
 networks:
