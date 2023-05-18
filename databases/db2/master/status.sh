@@ -1,3 +1,2 @@
 #!/bin/bash
-
-docker exec -it mysql-db-2 mysql -uroot -phello -e "SHOW MASTER STATUS\G"
+docker exec -it mysql-hivetown mysql -e "SHOW MASTER STATUS\G"
