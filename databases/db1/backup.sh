@@ -1,13 +1,11 @@
 #!/bin/bash
-
-# Define as variáveis de ambiente necessárias para o backup
-MYSQL_USER=mybackupuser
-MYSQL_PASSWORD=mybackuppassword
-DATABASE=hivetown
-
+# Load env
+set -a
+. .env
+set +a
 
 # Executa o mysqldump para fazer o backup dos bancos de dados no servidor master
-docker exec mysql-db-1 mysqldump -u $MYSQL_USER -p$MYSQL_PASSWORD $DATABASE  > MasterDown.sql
+docker exec mysql-hivetown mysqldump -u $MYSQL_USER -p$MYSQL_PASSWORD $DATABASE  > MasterDown.sql
 
 # Define o nome do arquivo SQL
 sql_file="MasterDown.sql"

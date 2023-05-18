@@ -1,3 +1,2 @@
 #!/bin/bash
-
-docker rm mysql-db-2
+docker rm mysql-hivetown

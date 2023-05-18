@@ -1,6 +1,11 @@
 #!/bin/bash
-gcloud compute instances network-interfaces update vm-database-2 --zone europe-west4-b --aliases ""
-gcloud compute instances network-interfaces update vm-database-1 --zone europe-west4-a --aliases 10.0.128.10
+# Load env
+set -a
+. .env
+set +a
+
+gcloud compute instances network-interfaces update $PEER_INSTANCE_NAME --zone $PEER_INSTANCE_ZONE --aliases ""
+gcloud compute instances network-interfaces update $INSTANCE_NAME --zone $INSTANCE_ZONE --aliases $ALIAS_IP
 
 echo "A construir..."
 source ./master/build.sh
@@ -10,10 +15,8 @@ source ./master/run.sh
 echo ""
 
 sleep 3
-echo "Estado do mysql-db-1: "
+echo "Estado do mysql-hivetown: "
 docker ps -a
 
-cp /home/romul/keepalived/keepalivedMASTER.conf /home/romul/keepalived/keepalived.conf &&
-sudo cp -R /home/romul/keepalived/keepalived.conf /etc/keepalived/ &&
-sudo cp -R /home/romul/keepalived/takeover.sh /etc/keepalived/ &&
-sudo systemctl restart keepalived
+export STATE=MASTER
+sudo /home/romul/keepalived/plug.sh

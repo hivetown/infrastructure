@@ -23,11 +23,11 @@ echo "Aguardar 5 segundos para atualizar a base de dados com o último backup...
 sleep 5
 
 # Executa o ficheiro sql para atualizar o master
-while ! docker exec -i mysql-db-1 mysql -uroot -phello -e "CREATE DATABASE hivetown;"; do
+while ! docker exec -i mysql-db-1 mysql -e "CREATE DATABASE hivetown;"; do
   sleep 2
   echo "A tentar novamente..."
 done
-docker exec -i mysql-db-1 mysql -uroot -phello hivetown < MasterDown.sql;
+docker exec -i mysql-db-1 mysql hivetown < MasterDown.sql;
 
 
 
