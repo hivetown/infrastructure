@@ -1,1 +1,1 @@
-docker run --rm -it --name hivetown-lb -p 80:80 -p 4444:4444 hivetown-lb
+docker run --rm -it --name hivetown-lb -p 80:80 -p 443:443 -p 4444:4444 hivetown-lb

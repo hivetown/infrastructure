@@ -7,9 +7,13 @@ services:
     ports:
       - '80:80'
       - '443:443'
-      - '4444:4444'
+      # - '4444:4444'
+    volumes:
+      - ./letsencrypt:/etc/letsencrypt
     networks:
       - load-balancer
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
   service-discovery:
     build: ./service-discovery/
     restart: always
@@ -21,7 +25,6 @@ services:
       - .env
     depends_on:
       - load-balancer
-
 networks:
   load-balancer:
     name: load-balancer
