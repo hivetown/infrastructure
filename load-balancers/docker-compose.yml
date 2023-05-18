@@ -30,6 +30,7 @@ services:
       restart_policy:
         condition: any
         delay: 24h
+        window: 1s
     volumes:
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
