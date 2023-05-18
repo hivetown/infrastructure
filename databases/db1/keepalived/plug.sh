@@ -13,9 +13,9 @@ if docker ps -a | grep -q $container_name; then
 fi
 
 # Copy needed files to /etc/keepalived
-sudo cp $toCopy /etc/keepalived/keepalived.conf
-sudo cp .env /etc/keepalived/.env
-sudo cp takeover.sh /etc/keepalived/takeover.sh
+sudo cp /home/romul/keepalived/$toCopy /etc/keepalived/keepalived.conf
+sudo cp /home/romul/keepalived/.env /etc/keepalived/.env
+sudo cp /home/romul/keepalived/takeover.sh /etc/keepalived/takeover.sh
 
 # Restart keepalived
 sudo systemctl restart keepalived
