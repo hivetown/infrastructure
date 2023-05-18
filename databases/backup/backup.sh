@@ -1,7 +1,7 @@
 #!/bin/bash
 # Load env
 set -a
-. .env
+. /home/romul/.env
 set +a
 
 backupDate=$(date +%Y-%m-%d_%H-%M-%S)
