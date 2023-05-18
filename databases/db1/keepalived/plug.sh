@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Define o nome do container
+container_name="mysql-hivetown"
+
 # Choose which keepalived.conf to copy
 toCopy="keepalived.backup.conf"
 if docker ps -a | grep -q $container_name; then
