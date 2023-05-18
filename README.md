@@ -56,7 +56,7 @@ Regra aplicada à tag `http-server` da rede `hivetown-external`, que permite à 
 <summary>Linha de comandos equivalente</summary>
 
 ```bash
-gcloud compute --project=hivetown firewall-rules create hivetown-external-allow-http --direction=INGRESS --priority=1000 --network=hivetown-external --action=ALLOW --rules=tcp:80,tcp:433 --source-ranges=0.0.0.0/0 --target-tags=http-server
+gcloud compute --project=hivetown firewall-rules create hivetown-external-allow-http --direction=INGRESS --priority=1000 --network=hivetown-external --action=ALLOW --rules=tcp:80,tcp:443 --source-ranges=0.0.0.0/0 --target-tags=http-server
 ```
 </details>
 

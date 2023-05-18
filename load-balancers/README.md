@@ -98,18 +98,10 @@ sudo systemctl start keepalived
 ```
 </details>
 
-Depois, foram copiados os ficheiros de configuração de cada tipo:
+Depois, editar o `.env` conforme necessitar, computar os templates, e configurar o keepalived:
 ```bash
-# Máquina MASTER
-sudo cp -R keepalived/master/* /etc/keepalived
-
-# Máquina BACKUP
-sudo cp -R keepalived/backup/* /etc/keepalived
-```
-
-Finalmente, reinicia-se o keepalived para que os ficheiros se configuração sejam usados:
-```bash
-sudo systemctl restart keepalived
+./computeTemplates.sh
+sudo ./plug.sh
 ```
 
 #### Certificados SSL (Let's Encrypt)
@@ -119,6 +111,8 @@ A primeira vez que se gera um certificado é necessário
 3. Gerar o certificado com `./certificateCreate.sh`
 4. Ativar a porta 443 do HaProxy
 5. Ativar o redirecionamento de http para https no HaProxy
+
+É ainda necessário transferir o certificado para as restantes máquinas de balanceamento de carga.
 
 ### Backup (passivo)
 Após a configuração do Master (ativo) foi necessário criar uma máquina com características idênticas, substituíndo o nome (`loadbalancer-2`, os ips internos `10.0.0.3` e `10.255.0.3`), e a região (`europe-west4-b`):
