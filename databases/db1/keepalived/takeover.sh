@@ -1,7 +1,7 @@
 #!/bin/bash
 # Load env
 set -a
-. .env
+. /etc/keepalived/.env
 set +a
 
 # Define o nome do container
