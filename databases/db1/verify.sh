@@ -17,7 +17,6 @@ if [ "$status" == "exited" ]; then
             echo "A INICIAR O SLAVE!"
 
             # Mudança da configuração do keepalived
-            # TODO ver
             cp /home/romul/keepalived/keepalivedSLAVE.conf /home/romul/keepalived/keepalived.conf
             sudo cp -R /home/romul/keepalived/keepalived.conf /etc/keepalived/
             sudo systemctl restart keepalived

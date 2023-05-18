@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# TODO fora
 # Define as variáveis de ambiente necessárias para o backup
 MYSQL_USER=mybackupuser
 MYSQL_PASSWORD=mybackuppassword

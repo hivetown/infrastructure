@@ -1,4 +1,0 @@
-[mysqld]
-server-id=${MYSQL_SERVER_ID}
-log-bin=${MYSQL_LOG_BIN}
-binlog-do-db=${MYSQL_BINLOG_DO_DB}

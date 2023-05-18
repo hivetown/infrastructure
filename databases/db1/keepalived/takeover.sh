@@ -4,6 +4,7 @@
 container_name="mysql-db-1"
 
 if docker ps -a | grep -q $container_name; then
+
     # Obtém o nome da imagem do contêiner
     image=$(docker inspect -f '{{.Config.Image}}' $container_name)
 
@@ -14,7 +15,6 @@ if docker ps -a | grep -q $container_name; then
         if [ "$state" = "BACKUP" ]; then
             echo "A INICIAR O MASTER!"
 
-            # TODO template em vez disto
             gcloud compute instances network-interfaces update vm-database-2 --zone europe-west4-b --aliases "" >> /home/romul/log.txt 2>&1
             gcloud compute instances network-interfaces update vm-database-1 --zone europe-west4-a --aliases 10.0.128.10
 
@@ -28,3 +28,4 @@ if docker ps -a | grep -q $container_name; then
         source /home/romul/newMaster.sh
     fi
 fi
+
