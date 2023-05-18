@@ -1,7 +1,11 @@
 #!/bin/bash
+# Load env
+set -a
+. /etc/keepalived/.env
+set +a
 
 # Define o nome do container
-container_name="mysql-db-1"
+container_name="mysql-hivetown"
 
 if docker ps -a | grep -q $container_name; then
 
@@ -15,15 +19,14 @@ if docker ps -a | grep -q $container_name; then
         if [ "$state" = "BACKUP" ]; then
             echo "A INICIAR O MASTER!"
 
-            gcloud compute instances network-interfaces update vm-database-2 --zone europe-west4-b --aliases "" >> /home/romul/log.txt 2>&1
-            gcloud compute instances network-interfaces update vm-database-1 --zone europe-west4-a --aliases 10.0.128.10
-
+            gcloud compute instances network-interfaces update $PEER_INSTANCE_NAME --zone $PEER_INSTANCE_ZONE --aliases "" >> /home/romul/log.txt 2>&1
+            gcloud compute instances network-interfaces update $INSTANCE_NAME --zone $INSTANCE_ZONE --aliases $ALIAS_IP
        
             # Mudança da configuração do keepalived
-            cp /home/romul/keepalived/keepalivedMASTER.conf /home/romul/keepalived/keepalived.conf
-            sudo cp -R /home/romul/keepalived/keepalived.conf /etc/keepalived/
+            sudo cp /home/romul/keepalived/keepalived.master.conf /etc/keepalived/keepalived.conf
             sudo systemctl restart keepalived
         fi
+        
         # Mudança da configuração do mysql para master
         source /home/romul/newMaster.sh
     fi

@@ -9,6 +9,4 @@ RUN pip install -r requirements.txt
 # Copy the application files
 COPY src/ .
 
-ENV ZOOKEEPER_HOSTS 10.0.0.10:2181
-
 CMD ["python", "-u", "/app/index.py"]

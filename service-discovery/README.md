@@ -41,14 +41,22 @@ gcloud compute instances create servicediscovery-1 \
 </details>
 
 ## Firewall
-Criada uma regra de firewall para permitir o acesso ao zookeeper (TCP 2181).
-
-Os intervalos IPv4 de origem foram os das subredes dos load balancers (`loadbalancers-eu-west4` 10.0.0.0/22) e dos web servers (`webservers-eu-west4` 10.0.192.0/18)
-
+Criadas duas regras de firewall:
+1. Aplicada aos clientes, que permite a saída de tráfego dos `zookeeper-client` (tag de rede) para a subrede servicediscovery-eu-west4 do `tcp:2181` (porta do zookeeper)
 <details>
 <summary>Linha de comandos equivalente</summary>
 
 ```bash
-gcloud compute --project=hivetown firewall-rules create hivetown-allow-zookeeper --description=Permitir\ tr\áfego\ dos\ clientes\ para\ o\ zookeeper --direction=INGRESS --priority=1000 --network=hivetown --action=ALLOW --rules=tcp:2181 --source-ranges=10.0.0.0/22,10.0.192.0/18 --target-tags=zookeeper
+gcloud compute --project=hivetown firewall-rules create hivetown-allow-zookeeper-client --description="Allow outbound zookeeper client traffic" --direction=EGRESS --priority=1000 --network=hivetown --action=ALLOW --rules=tcp:2181 --destination-ranges=10.0.4.0/22 --target-tags=zookeeper-client
 ```
+</details>
+
+2. Aplicada aos servidores, que permite a entrada de tráfego para os `zookeeper-server` (tag de rede)
+<details>
+<summary>Linha de comandos equivalente</summary>
+
+```bash
+gcloud compute --project=hivetown firewall-rules create hivetown-allow-zookeeper-server --description="Allow inbound server traffic" --direction=INGRESS --priority=1000 --network=hivetown --action=ALLOW --rules=tcp:2181 --destination-ranges=10.0.4.0/22 --source-tags=zookeeper-client --target-tags=zookeeper-server
+```
+</details>
 </details>

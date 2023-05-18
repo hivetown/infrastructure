@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define o nome do container
-container_name="mysql-db-2"
+container_name="mysql-hivetown"
 
 # Verifica o status do container
 status=$(docker inspect -f '{{.State.Status}}' $container_name)
@@ -12,15 +12,12 @@ image=$(docker inspect -f '{{.Config.Image}}' $container_name)
 # Verifica se o container foi encerrado ou não
 if [ "$status" == "exited" ]; then
     if [ "$image" == "mysql-master-image" ]; then
-
         state=$(grep "^ *state" /etc/keepalived/keepalived.conf | awk '{print $2}')
         if [ "$state" = "MASTER" ]; then
             echo "A INICIAR O SLAVE!"
 
             # Mudança da configuração do keepalived
-            cp /home/romul/keepalived/keepalivedSLAVE.conf /home/romul/keepalived/keepalived.conf
-            sudo cp -R /home/romul/keepalived/keepalived.conf /etc/keepalived/
-            sudo systemctl restart keepalived
+            export STATE=BACKUP
         fi
         # Mudança da configuração do mysql para slave
         source /home/romul/newSlave.sh

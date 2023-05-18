@@ -1,3 +1,2 @@
 #!/bin/bash
-
-docker stop mysql-db-2
+docker stop mysql-hivetown
