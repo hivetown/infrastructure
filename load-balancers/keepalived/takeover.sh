@@ -4,7 +4,7 @@
 # - $INSTANCE_NAME: the name of the host instance
 # - $INSTANCE_ZONE: the zone of the host instance
 # TODO! template em vez disto
-# . ./loadEnv.sh
+. .env
 
 # Get the instance that holds the public IP address - the one that is currently ACTIVE
 activeInstance=`gcloud compute instances list --project hivetown | grep $HVT_PUBLIC_IP`

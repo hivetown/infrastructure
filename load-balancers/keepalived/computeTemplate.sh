@@ -1,11 +1,5 @@
 #!/bin/bash
-# Error if .env does not exist
-if [ ! -f .env ]; then
-  echo "ERROR: .env file not found. Please create it from .env.example"
-  exit 1
-fi
-
-# Populate environment variables from local .env
+# Load env
 set -a
 . .env
 set +a
