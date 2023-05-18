@@ -23,8 +23,8 @@ fi
 # Adiciona o comando USE hivetown antes do comando DROP TABLE
 sed -i '1iUSE hivetown;' ${BACKUP_DESTINATION}/${FILENAME}
 
-docker exec -i mysql-db-1 mysql -e "CREATE DATABASE hivetown;"
-docker exec -i mysql-db-1 mysql hivetown < ${BACKUP_DESTINATION}/${FILENAME};
+docker exec -i mysql-hivetown mysql -e "CREATE DATABASE hivetown;"
+docker exec -i mysql-hivetown mysql hivetown < ${BACKUP_DESTINATION}/${FILENAME};
 
 # Elimina o ficheiro sql
 rm ${BACKUP_DESTINATION}/${FILENAME}
