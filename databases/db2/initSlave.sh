@@ -11,5 +11,4 @@ sleep 3
 echo "Estado do mysql-db-2: "
 docker ps -a
 
-export STATE=BACKUP
-sudo /home/romul/keepalived/plug.sh
+sudo bash /home/romul/keepalived/plug.sh
