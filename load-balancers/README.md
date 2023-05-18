@@ -112,6 +112,14 @@ Finalmente, reinicia-se o keepalived para que os ficheiros se configuração sej
 sudo systemctl restart keepalived
 ```
 
+#### Certificados SSL (Let's Encrypt)
+A primeira vez que se gera um certificado é necessário
+1. Desativar a porta 443 do HaProxy
+2. Desativar o redirecionamento de http para https no HaProxy
+3. Gerar o certificado com `./certificateCreate.sh`
+4. Ativar a porta 443 do HaProxy
+5. Ativar o redirecionamento de http para https no HaProxy
+
 ### Backup (passivo)
 Após a configuração do Master (ativo) foi necessário criar uma máquina com características idênticas, substituíndo o nome (`loadbalancer-2`, os ips internos `10.0.0.3` e `10.255.0.3`), e a região (`europe-west4-b`):
 
@@ -142,6 +150,9 @@ gcloud compute instances create loadbalancer-2 \
 </details>
 
 Foi novamente necessário instalar o Docker
+
+Relativamente aos certificados, como o loadbalancer-1 é o responsável por gerar os certificados, foi necessário copiá-los para o loadbalancer-2.
+O ficheiro a copiar é o `~/infrastructure/load-balancer/letsencrypt/live/hivetown.pt/hivetown.pt.pem` e deve ser colocado no mesmo local no loadbalancer-2.
 
 ## IP Externo (Floating IP)
 Foi reservado um IP externo estático (34.90.28.85) para a região `europe-west4`, associado por defeito ao `loadbalancer-1`
