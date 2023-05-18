@@ -19,4 +19,4 @@ echo "Estado do mysql-hivetown: "
 docker ps -a
 
 export STATE=MASTER
-sudo /home/romul/keepalived/plug.sh
+sudo bash /home/romul/keepalived/plug.sh
