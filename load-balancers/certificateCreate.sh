@@ -13,10 +13,10 @@ docker run --rm -it \
     --volume $LOCAL_DIR:/etc/letsencrypt \
     certbot/certbot \
         certonly \
-            --force-renew --test-cert \
             --non-interactive --standalone \
             --agree-tos --no-eff-email \
             -d $CERTBOT_DOMAINS --email $CERTBOT_EMAIL 
+            # --force-renew --test-cert # Uncomment for testing ONLY
 
 # Get main domain
 MAIN_DOMAIN=`echo $CERTBOT_DOMAINS | cut -d',' -f1`
