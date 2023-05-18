@@ -8,7 +8,7 @@ source ./slave/run.sh
 echo ""
 
 sleep 3
-echo "Estado do mysql-db-2: "
+echo "Estado do mysql-hivetown: "
 docker ps -a
 
 sudo bash /home/romul/keepalived/plug.sh
