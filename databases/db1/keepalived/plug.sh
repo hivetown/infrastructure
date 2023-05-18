@@ -2,8 +2,14 @@
 
 # Choose which keepalived.conf to copy
 toCopy="keepalived.backup.conf"
-if [ "$STATE" == "MASTER" ]; then
-  toCopy="keepalived.master.conf"
+if docker ps -a | grep -q $container_name; then
+
+    # Obtém o nome da imagem do contêiner
+    image=$(docker inspect -f '{{.Config.Image}}' $container_name)
+
+    if [ "$image" == "mysql-master-image" ]; then
+        toCopy="keepalived.master.conf"
+    fi
 fi
 
 # Copy needed files to /etc/keepalived
