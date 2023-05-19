@@ -1,7 +1,7 @@
 #!/bin/bash
 # Load env
 set -a
-. .env
+. /etc/keepalived/.env
 set +a
 
 # Define o nome do container
@@ -23,7 +23,7 @@ if docker ps -a | grep -q $container_name; then
             gcloud compute instances network-interfaces update $INSTANCE_NAME --zone $INSTANCE_ZONE --aliases $ALIAS_IP
        
             # Mudança da configuração do keepalived
-            sudo cp /home/romul/keepalived/keepalived.master.conf /etc/keepalived/
+            sudo cp /home/romul/keepalived/keepalived.master.conf /etc/keepalived/keepalived.conf
             sudo systemctl restart keepalived
         fi
         

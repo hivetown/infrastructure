@@ -1,7 +1,7 @@
 #!/bin/bash
 # Load env
 set -a
-. .env
+. /home/romul/.env
 set +a
 
 # Executa o mysqldump para fazer o backup dos bancos de dados no servidor master
