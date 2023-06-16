@@ -6,7 +6,7 @@ from Haproxy import Haproxy
 from RepeatTimer import RepeatTimer
 from datetime import datetime
 
-haproxy = Haproxy(getenv("HAPROXY_ADDRESS"), getenv("HAPROXY_USERNAME"), getenv("HAPROXY_PASSWORD"))
+haproxy = Haproxy(getenv("HAPROXY_ADDRESS"), getenv("HAPROXY_DATAPLANEAPI_USERNAME"), getenv("HAPROXY_DATAPLANEAPI_PASSWORD"))
 def applyTransaction():
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     
