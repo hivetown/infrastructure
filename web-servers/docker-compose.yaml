@@ -32,6 +32,8 @@ services:
       - WEB_PORT=8081
     env_file:
       - .env
+    labels:
+      - "com.centurylinklabs.watchtower.enable=false"
   watchtower:
     image: containrrr/watchtower
     volumes:
