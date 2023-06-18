@@ -16,7 +16,7 @@ source /home/romul/slave/run.sh
 echo ""
 
 sleep 3
-echo "Estado do mysql-db-1: "
+echo "Estado do mysql-hivetown: "
 docker ps -a
 
 echo ""

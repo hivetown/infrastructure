@@ -46,7 +46,7 @@ gcloud compute instances create loadbalancer-1 \
     --provisioning-model=STANDARD \
     --service-account=433774389779-compute@developer.gserviceaccount.com \
     --scopes=https://www.googleapis.com/auth/devstorage.read_only,https://www.googleapis.com/auth/compute,https://www.googleapis.com/auth/servicecontrol,https://www.googleapis.com/auth/service.management.readonly,https://www.googleapis.com/auth/logging.write,https://www.googleapis.com/auth/monitoring.write,https://www.googleapis.com/auth/trace.append \
-    --tags=ssh,vrrp,http-server \
+    --tags=ssh,vrrp-loadbalancer,zookeeper-client,http-server \
     --create-disk=auto-delete=yes,boot=yes,device-name=loadbalancer-1,image=projects/ubuntu-os-cloud/global/images/ubuntu-2204-jammy-v20230415,mode=rw,size=10,type=projects/hivetown/zones/europe-west4-a/diskTypes/pd-balanced \
     --no-shielded-secure-boot \
     --shielded-vtpm \
@@ -98,19 +98,21 @@ sudo systemctl start keepalived
 ```
 </details>
 
-Depois, foram copiados os ficheiros de configuração de cada tipo:
+Depois, editar o `.env` conforme necessitar, computar os templates, e configurar o keepalived:
 ```bash
-# Máquina MASTER
-sudo cp -R keepalived/master/* /etc/keepalived
-
-# Máquina BACKUP
-sudo cp -R keepalived/backup/* /etc/keepalived
+./computeTemplates.sh
+sudo ./plug.sh
 ```
 
-Finalmente, reinicia-se o keepalived para que os ficheiros se configuração sejam usados:
-```bash
-sudo systemctl restart keepalived
-```
+#### Certificados SSL (Let's Encrypt)
+A primeira vez que se gera um certificado é necessário
+1. Desativar a porta 443 do HaProxy
+2. Desativar o redirecionamento de http para https no HaProxy
+3. Gerar o certificado com `./certificateCreate.sh`
+4. Ativar a porta 443 do HaProxy
+5. Ativar o redirecionamento de http para https no HaProxy
+
+É ainda necessário transferir o certificado para as restantes máquinas de balanceamento de carga.
 
 ### Backup (passivo)
 Após a configuração do Master (ativo) foi necessário criar uma máquina com características idênticas, substituíndo o nome (`loadbalancer-2`, os ips internos `10.0.0.3` e `10.255.0.3`), e a região (`europe-west4-b`):
@@ -129,7 +131,7 @@ gcloud compute instances create loadbalancer-2 \
     --provisioning-model=STANDARD \
     --service-account=433774389779-compute@developer.gserviceaccount.com \
     --scopes=https://www.googleapis.com/auth/devstorage.read_only,https://www.googleapis.com/auth/compute,https://www.googleapis.com/auth/servicecontrol,https://www.googleapis.com/auth/service.management.readonly,https://www.googleapis.com/auth/logging.write,https://www.googleapis.com/auth/monitoring.write,https://www.googleapis.com/auth/trace.append \
-    --tags=ssh,vrrp,http-server \
+    --tags=ssh,vrrp-loadbalancer,zookeeper-client,http-server \
     --create-disk=auto-delete=yes,boot=yes,device-name=loadbalancer-2,image=projects/ubuntu-os-cloud/global/images/ubuntu-2204-jammy-v20230415,mode=rw,size=10,type=projects/hivetown/zones/europe-west4-b/diskTypes/pd-balanced \
     --metadata=startup-script='sudo ip route add 10.0.0.0/8 via 10.0.0.1'
     --no-shielded-secure-boot \
@@ -142,6 +144,9 @@ gcloud compute instances create loadbalancer-2 \
 </details>
 
 Foi novamente necessário instalar o Docker
+
+Relativamente aos certificados, como o loadbalancer-1 é o responsável por gerar os certificados, foi necessário copiá-los para o loadbalancer-2.
+O ficheiro a copiar é o `~/infrastructure/load-balancer/letsencrypt/live/hivetown.pt/hivetown.pt.pem` e deve ser colocado no mesmo local no loadbalancer-2.
 
 ## IP Externo (Floating IP)
 Foi reservado um IP externo estático (34.90.28.85) para a região `europe-west4`, associado por defeito ao `loadbalancer-1`

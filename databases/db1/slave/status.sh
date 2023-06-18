@@ -1,3 +1,3 @@
 #!/bin/bash
 
-docker exec -it mysql-db-1 mysql -uroot -phello -e "SHOW SLAVE STATUS\G"
+docker exec -it mysql-hivetown mysql -e "SHOW SLAVE STATUS\G"

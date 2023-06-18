@@ -6,7 +6,7 @@ from Haproxy import Haproxy
 from RepeatTimer import RepeatTimer
 from datetime import datetime
 
-haproxy = Haproxy(getenv("HAPROXY_ADDRESS"), getenv("HAPROXY_USERNAME"), getenv("HAPROXY_PASSWORD"))
+haproxy = Haproxy(getenv("HAPROXY_ADDRESS"), getenv("HAPROXY_DATAPLANEAPI_USERNAME"), getenv("HAPROXY_DATAPLANEAPI_PASSWORD"))
 def applyTransaction():
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     
@@ -18,8 +18,8 @@ def applyTransaction():
     res = haproxy.commitTransaction()
     print(f'Transaction {transaction} {"SUCCESS" if res else "FAIL"} at {now}')
 
-
-repeatTimer = RepeatTimer(5, applyTransaction)
+# Haproxy transaction is applied every 5 seconds, if there is one, so we check every 6 seconds to make sure we don't miss any
+repeatTimer = RepeatTimer(6, applyTransaction)
 
 def addToBackend(nodes: Set, backend: AnyStr, transaction: AnyStr):
     for node in nodes:
