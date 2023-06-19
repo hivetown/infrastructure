@@ -76,6 +76,7 @@ class Haproxy:
                 "address": serverIp,
                 "port": serverPort,
                 "check": "enabled",
+                "health_check_address": "/healthz",
             }
 
             self.post(f'/v2/services/haproxy/configuration/servers?backend={backend}&transaction_id={transaction}', server)
