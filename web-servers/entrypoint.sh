@@ -1,12 +1,17 @@
 # Copy .env files
-if [ ! -f .env.example ]
+if [ ! -f .env ]
 then
 	cp .env.example .env
 fi
-# api.env, for now, already has the correct values predefined
-if [ ! -f .env.example ]
+
+if [ ! -f api.env ]
 then
 	cp api.env.example api.env
+fi
+
+if [ ! -f web.env ]
+then
+	cp web.env.example web.env
 fi
 
 # Get ens4 IP
